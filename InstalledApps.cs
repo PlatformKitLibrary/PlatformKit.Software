@@ -58,13 +58,9 @@ public class InstalledApps
     {
         if (OperatingSystem.IsLinux())
         {
-#if NET5_0_OR_GREATER
             List<AppModel> apps = new List<AppModel>();
 
             string[] binResult = CommandRunner.RunCommandOnLinux("ls -F /usr/bin | grep -v /").Split(Environment.NewLine);
-#else
-            string[] binResult = CommandRunner.RunCommandOnLinux("ls -F /usr/bin | grep -v /").Split(Convert.ToChar(Environment.NewLine));
-#endif
 
             foreach (var app in binResult)
             {
