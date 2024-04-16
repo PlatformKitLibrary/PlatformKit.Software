@@ -36,11 +36,11 @@ public class InstalledApps
     // ReSharper disable once IdentifierTypo
     protected static AppModel[] GetOnLinux(bool includeSnaps = false, bool includeFlatpaks = false)
     {
-        List<AppModel> apps = new List<AppModel>();
-
         if (OperatingSystem.IsLinux())
         {
 #if NET5_0_OR_GREATER
+            List<AppModel> apps = new List<AppModel>();
+
             string[] binResult = CommandRunner.RunCommandOnLinux("ls -F /usr/bin | grep -v /").Split(Environment.NewLine);
 #else
             string[] binResult = CommandRunner.RunCommandOnLinux("ls -F /usr/bin | grep -v /").Split(Convert.ToChar(Environment.NewLine));
@@ -53,13 +53,13 @@ public class InstalledApps
             
             if (includeSnaps)
             {
-                foreach (var snap in InstalledSnaps.Get())
+                foreach (AppModel snap in InstalledSnaps.Get())
                 {
                     apps.Add(snap);
                 }
             }
             if(includeFlatpaks){
-                foreach (var flatpak in InstalledFlatpaks.Get())
+                foreach (AppModel flatpak in InstalledFlatpaks.Get())
                 {
                     apps.Add(flatpak);
                 }
