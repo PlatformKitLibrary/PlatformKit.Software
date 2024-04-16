@@ -45,9 +45,9 @@ namespace PlatformKit.Software
                     string[] flatpakResults = CommandRunner.RunCommandOnLinux("flatpak list --columns=name")
                     .Split(Environment.NewLine);
 
-                    var installLocation = CommandRunner.RunCommandOnLinux("flatpak --installations");
+                    string installLocation = CommandRunner.RunCommandOnLinux("flatpak --installations");
 
-                    foreach (var flatpak in flatpakResults)
+                    foreach (string flatpak in flatpakResults)
                     {
                         apps.Add(new AppModel(flatpak, installLocation));
                     }
