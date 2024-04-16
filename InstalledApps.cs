@@ -87,6 +87,19 @@ public class InstalledApps
         throw new PlatformNotSupportedException();
     }
 
+    public bool IsInstalled(string packageName)
+    {
+        foreach (AppModel app in Get())
+        {
+            if (app.ExecutableName.Equals(packageName))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    
     /// <summary>
     /// 
     /// </summary>
@@ -108,19 +121,6 @@ public class InstalledApps
         }
 
         throw new PlatformNotSupportedException();
-    }
-
-    public bool IsInstalled(string packageName)
-    {
-        foreach (AppModel app in Get())
-        {
-            if (app.ExecutableName.Equals(packageName))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
     
     /// <summary>
