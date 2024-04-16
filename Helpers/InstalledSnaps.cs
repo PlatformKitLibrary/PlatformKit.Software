@@ -46,11 +46,11 @@ namespace PlatformKit.Software
 
                 if (useSnap)
                 {
-                    string[] snapResults = CommandRunner.RunCommandOnLinux("ls /snap/bin").Split(' ');
+                    string[] snapResults = CommandRunner.RunCommandOnLinux("ls " + Path.DirectorySeparatorChar + "snap" + Path.DirectorySeparatorChar + "bin").Split(' ');
 
                     foreach (string snap in snapResults)
                     {
-                        apps.Add(new AppModel(snap, "/snap/bin"));
+                        apps.Add(new AppModel(snap, Path.DirectorySeparatorChar + "snap" + Path.DirectorySeparatorChar + "bin"));
                     }
 
                     return apps.ToArray();
@@ -67,7 +67,7 @@ namespace PlatformKit.Software
         {
             if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
             {
-                return  Directory.Exists("/snap/bin");
+                return  Directory.Exists(Path.DirectorySeparatorChar + "snap" + Path.DirectorySeparatorChar + "bin");
             }
 
             throw new PlatformNotSupportedException();
