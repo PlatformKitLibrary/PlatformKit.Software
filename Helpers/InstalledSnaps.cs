@@ -42,9 +42,7 @@ namespace PlatformKit.Software
 
             if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
             {
-                bool useSnap = IsSnapInstalled();
-
-                if (useSnap)
+                if (IsSnapInstalled())
                 {
                     string[] snapResults = CommandRunner.RunCommandOnLinux("ls " + Path.DirectorySeparatorChar + "snap" + Path.DirectorySeparatorChar + "bin").Split(' ');
 
