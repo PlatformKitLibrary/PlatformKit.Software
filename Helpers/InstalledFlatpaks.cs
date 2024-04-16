@@ -42,13 +42,8 @@ namespace PlatformKit.Software
             {
                 if (IsFlatpakInstalled())
                 {
-#if NET5_0_OR_GREATER
-                string[] flatpakResults = CommandRunner.RunCommandOnLinux("flatpak list --columns=name")
-                    .Split(Environment.NewLine);
-#else
                     string[] flatpakResults = CommandRunner.RunCommandOnLinux("flatpak list --columns=name")
-                        .Split(Convert.ToChar(Environment.NewLine));
-#endif
+                    .Split(Environment.NewLine);
 
                     var installLocation = CommandRunner.RunCommandOnLinux("flatpak --installations");
 
