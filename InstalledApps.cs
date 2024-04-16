@@ -109,7 +109,7 @@ public class InstalledApps
     {
         if (OperatingSystem.IsWindows())
         {
-            throw new NotImplementedException();
+            return GetOnWindows();
         }
         else if (OperatingSystem.IsMacOS())
         {
