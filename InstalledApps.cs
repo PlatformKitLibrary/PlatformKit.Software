@@ -100,7 +100,7 @@ public class InstalledApps
         }
         else if (OperatingSystem.IsMacOS())
         {
-            throw new NotImplementedException();
+            return GetOnMac();
         }
         else if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
         {
