@@ -42,7 +42,7 @@ namespace PlatformKit.Software
 
             if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
             {
-                bool useSnap = Directory.Exists("/snap/bin");
+                bool useSnap = IsSnapInstalled();
 
                 if (useSnap)
                 {
@@ -58,6 +58,16 @@ namespace PlatformKit.Software
 
                 apps.Clear();
                 return apps.ToArray();
+            }
+
+            throw new PlatformNotSupportedException();
+        }
+
+        public static bool IsSnapInstalled()
+        {
+            if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
+            {
+                return  Directory.Exists("/snap/bin");
             }
 
             throw new PlatformNotSupportedException();
