@@ -40,22 +40,7 @@ namespace PlatformKit.Software
 
             if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
             {
-                bool useFlatpaks;
-
-                string[] flatpakTest = CommandRunner.RunCommandOnLinux("flatpak --version").Split(' ');
-
-                if (flatpakTest[0].Contains("Flatpak"))
-                {
-                    Version.Parse(flatpakTest[1]);
-
-                    useFlatpaks = true;
-                }
-                else
-                {
-                    useFlatpaks = false;
-                }
-
-                if (useFlatpaks)
+                if (IsFlatpakInstalled())
                 {
 #if NET5_0_OR_GREATER
                 string[] flatpakResults = CommandRunner.RunCommandOnLinux("flatpak list --columns=name")
@@ -80,6 +65,20 @@ namespace PlatformKit.Software
             }
 
             throw new PlatformNotSupportedException();
+        }
+
+        public static bool IsFlatpakInstalled()
+        {
+            string[] flatpakTest = CommandRunner.RunCommandOnLinux("flatpak --version").Split(' ');
+
+            if (flatpakTest[0].Contains("Flatpak"))
+            {
+                Version.Parse(flatpakTest[1]);
+
+                return true;
+            }
+
+            return false;
         }
     }
 }
