@@ -36,10 +36,10 @@ namespace PlatformKit.Software
         /// <exception cref="PlatformNotSupportedException"></exception>
         public static AppModel[] Get()
         {
-            List<AppModel> apps = new List<AppModel>();
-
             if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
             {
+                List<AppModel> apps = new List<AppModel>();
+
                 if (IsFlatpakInstalled())
                 {
                     string[] flatpakResults = CommandRunner.RunCommandOnLinux("flatpak list --columns=name")
