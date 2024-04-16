@@ -75,5 +75,18 @@ namespace PlatformKit.Software
 
             return false;
         }
+        
+        public static bool IsPackageInstalled(string packageName)
+        {
+            foreach (AppModel app in Get())
+            {
+                if (app.ExecutableName.Equals(packageName))
+                {
+                    return true;
+                }       
+            }
+
+            return false;
+        }
     }
 }
