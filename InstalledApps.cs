@@ -1,17 +1,33 @@
 /*
-      PlatformKit
-      
-      Copyright (c) Alastair Lundy 2018-2024
-      
-      This Source Code Form is subject to the terms of the Mozilla Public
-      License, v. 2.0. If a copy of the MPL was not distributed with this
-      file, You can obtain one at http://mozilla.org/MPL/2.0/.
+        MIT License
+
+        Copyright (c) 2024 Alastair Lundy
+
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+
    */
 
 using System;
 using System.Collections.Generic;
 
 using System.IO;
+
 
 namespace PlatformKit.Software;
 
@@ -22,7 +38,7 @@ public class InstalledApps
     {
         List<AppModel> apps = new List<AppModel>();
 
-        if (PlatformAnalyzer.IsLinux())
+        if (OperatingSystem.IsLinux())
         {
 #if NET5_0_OR_GREATER
             string[] binResult = CommandRunner.RunCommandOnLinux("ls -F /usr/bin | grep -v /").Split(Environment.NewLine);
@@ -54,7 +70,7 @@ public class InstalledApps
 
         throw new PlatformNotSupportedException();
     }
-    
+
     /// <summary>
     /// 
     /// </summary>
@@ -62,63 +78,17 @@ public class InstalledApps
     /// <exception cref="NotImplementedException"></exception>
     public static AppModel[] Get()
     {
-        if (PlatformAnalyzer.IsWindows())
+        if (OperatingSystem.IsWindows())
         {
             throw new NotImplementedException();
         }
-        else if (PlatformAnalyzer.IsMac())
+        else if (OperatingSystem.IsMacOS())
         {
             throw new NotImplementedException();
         }
-        else if (PlatformAnalyzer.IsLinux() || PlatformAnalyzer.IsFreeBSD())
+        else if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
         {
-            List<AppModel> apps = new List<AppModel>();
-            
-            bool useSnap = Directory.Exists("/snap/bin");
-            bool useFlatpak;
-
-            try
-            {
-                string[] flatpakTest = CommandRunner.RunCommandOnLinux("flatpak --version").Split(' ');
-                
-                if (flatpakTest[0].Contains("Flatpak"))
-                {
-                    Version.Parse(flatpakTest[1]);
-
-                    useFlatpak = true;
-                }
-                else
-                {
-                    useFlatpak = false;
-                }
-            }
-            catch
-            {
-                useFlatpak = false;
-            }
-            
-            if (useFlatpak)
-            {
-                foreach (var flatpak in InstalledFlatpaks.Get())
-                {
-                    apps.Add(flatpak);
-                }
-            }
-
-            if (useSnap)
-            {
-                foreach (var snap in InstalledSnaps.Get())
-                {
-                    apps.Add(snap);
-                }
-            }
-            
-            foreach (var app in GetOnLinux())
-            {
-                apps.Add(app);
-            }
-
-            return apps.ToArray();
+            return GetOnLinux(true, true);
         }
 
         throw new PlatformNotSupportedException();
@@ -131,19 +101,19 @@ public class InstalledApps
     /// <exception cref="PlatformNotSupportedException"></exception>
     public static void Open(AppModel appModel)
     {
-        if (PlatformAnalyzer.IsWindows())
+        if (OperatingSystem.IsWindows())
         {
             ProcessRunner.RunProcessOnWindows(appModel.InstallLocation, appModel.ExecutableName);
         }
-        else if (PlatformAnalyzer.IsMac())
+        else if (OperatingSystem.IsMacOS())
         {
            ProcessRunner.RunProcessOnMac(appModel.InstallLocation, appModel.ExecutableName);
         }
-        else if (PlatformAnalyzer.IsLinux())
+        else if (OperatingSystem.IsLinux())
         {
             ProcessRunner.RunProcessOnLinux(appModel.InstallLocation, appModel.ExecutableName);
         }
-        else if (PlatformAnalyzer.IsFreeBSD())
+        else if (OperatingSystem.IsFreeBSD())
         {
            ProcessRunner.RunProcessOnFreeBsd(appModel.InstallLocation, appModel.ExecutableName);
         }
