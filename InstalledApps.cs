@@ -33,6 +33,26 @@ namespace PlatformKit.Software;
 
 public class InstalledApps
 {
+    protected static AppModel[] GetOnMac()
+    {
+        if (OperatingSystem.IsMacOS())
+        {
+            List<AppModel> apps = new List<AppModel>();
+
+            string[] binResult = CommandRunner.RunCommandOnLinux("ls -F /usr/bin | grep -v /").Split(Environment.NewLine);
+
+            foreach (var app in binResult)
+            {
+                apps.Add(new AppModel(app, "/usr/bin"));
+            }
+
+            
+
+            return apps.ToArray();
+        }
+
+        throw new PlatformNotSupportedException();
+    }
     // ReSharper disable once IdentifierTypo
     protected static AppModel[] GetOnLinux(bool includeSnaps = false, bool includeFlatpaks = false)
     {
