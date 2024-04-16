@@ -33,6 +33,19 @@ namespace PlatformKit.Software;
 
 public class InstalledApps
 {
+    
+    protected static AppModel[] GetOnWindows()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            List<AppModel> apps = new List<AppModel>();
+            
+            
+        }
+
+        throw new PlatformNotSupportedException();
+    }
+    
     protected static AppModel[] GetOnMac()
     {
         if (OperatingSystem.IsMacOS())
@@ -53,6 +66,7 @@ public class InstalledApps
 
         throw new PlatformNotSupportedException();
     }
+
     // ReSharper disable once IdentifierTypo
     protected static AppModel[] GetOnLinux(bool includeSnaps = false, bool includeFlatpaks = false)
     {
