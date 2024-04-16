@@ -28,7 +28,6 @@ using System.Collections.Generic;
 
 using System.IO;
 
-
 namespace PlatformKit.Software;
 
 public class InstalledApps
