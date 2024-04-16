@@ -23,6 +23,8 @@
 
    */
 
+using System.Runtime.Versioning;
+
 namespace PlatformKit.Software
 {
 
@@ -34,6 +36,8 @@ namespace PlatformKit.Software
         /// </summary>
         /// <returns></returns>
         /// <exception cref="PlatformNotSupportedException"></exception>
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("freebsd")]
         public static AppModel[] Get()
         {
             if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
@@ -62,20 +66,38 @@ namespace PlatformKit.Software
             throw new PlatformNotSupportedException();
         }
 
+        /// <summary>
+        /// Determines whether the Flatpak package manager is installed or not.
+        /// </summary>
+        /// <returns></returns>
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("freebsd")]
         public static bool IsFlatpakInstalled()
         {
-            string[] flatpakTest = CommandRunner.RunCommandOnLinux("flatpak --version").Split(' ');
-
-            if (flatpakTest[0].Contains("Flatpak"))
+            if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
             {
-                Version.Parse(flatpakTest[1]);
+                string[] flatpakTest = CommandRunner.RunCommandOnLinux("flatpak --version").Split(' ');
 
-                return true;
+                if (flatpakTest[0].Contains("Flatpak"))
+                {
+                    Version.Parse(flatpakTest[1]);
+
+                    return true;
+                }
+
+                return false;
             }
 
-            return false;
+            throw new PlatformNotSupportedException();
         }
-        
+
+        /// <summary>
+        /// Determines whether a flatpak package is installed.
+        /// </summary>
+        /// <param name="packageName"></param>
+        /// <returns></returns>
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("freebsd")]
         public static bool IsPackageInstalled(string packageName)
         {
             foreach (AppModel app in Get())

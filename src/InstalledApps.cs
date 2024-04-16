@@ -27,39 +27,118 @@ using System;
 using System.Collections.Generic;
 
 using System.IO;
+using System.Runtime.Versioning;
+using Microsoft.VisualBasic;
 
 namespace PlatformKit.Software;
 
 public class InstalledApps
 {
-    
-    protected static AppModel[] GetOnWindows()
+
+    [SupportedOSPlatform("windows")]
+    protected static AppModel[] ExpandWinSpecialFolderPath(string directory)
     {
+        List<AppModel> apps = new List<AppModel>();
+
         if (OperatingSystem.IsWindows())
         {
-            List<AppModel> apps = new List<AppModel>();
-            
-            
+            var files = directory.Split(Environment.NewLine);
+        
+            for (int programIndex = 0; programIndex < files.Length; programIndex++)
+            {
+                string item = files[programIndex];
+                
+                if (item.Contains("<DIR>"))
+                {
+                    AppModel[] programs = InstalledWinPrograms.Get(item);
+
+                    foreach (AppModel program in programs)
+                    {
+                        apps.Add(program);
+                    }
+                }
+            }
+
+            return apps.ToArray();
         }
 
         throw new PlatformNotSupportedException();
     }
     
+    [SupportedOSPlatform("windows")]
+    protected static AppModel[] GetOnWindows(bool includeWindowsPrograms)
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            List<AppModel> apps = new List<AppModel>();
+
+            string programFiles = CommandRunner.RunCmdCommand("dir " + Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
+            
+            string programFilesX86 = CommandRunner.RunCmdCommand("dir " + Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86));
+
+            string appData = CommandRunner
+                .RunCmdCommand("dir " + Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+
+            string winPrograms = CommandRunner
+                .RunCmdCommand(Environment.GetFolderPath(Environment.SpecialFolder.System));
+
+            foreach (AppModel program in ExpandWinSpecialFolderPath(programFiles))
+            {
+                apps.Add(program);
+            }
+            foreach (AppModel program in ExpandWinSpecialFolderPath(programFilesX86))
+            {
+                apps.Add(program);
+            }
+            foreach (AppModel program in ExpandWinSpecialFolderPath(appData))
+            {
+                apps.Add(program);
+            }
+
+            if (includeWindowsPrograms)
+            {
+                foreach (AppModel program in ExpandWinSpecialFolderPath(winPrograms))
+                {
+                    apps.Add(program);
+                }
+            }
+
+            return apps.ToArray();
+        }
+
+        throw new PlatformNotSupportedException();
+    }
+    
+    [SupportedOSPlatform("macos")]
     protected static AppModel[] GetOnMac()
     {
         if (OperatingSystem.IsMacOS())
         {
             List<AppModel> apps = new List<AppModel>();
 
-            string[] binResult = CommandRunner.RunCommandOnLinux("ls -F /usr/bin | grep -v /").Split(Environment.NewLine);
+            string binDirectory = Path.DirectorySeparatorChar + "usr" + Path.DirectorySeparatorChar + "bin";
+            
+            string listFilesStart = "ls -F";
+            string listFilesEnd = " | grep -v /";
+            
+            string[] binResult = CommandRunner.RunCommandOnLinux(listFilesStart + " " + binDirectory + " " + listFilesEnd).Split(Environment.NewLine);
 
-            foreach (var app in binResult)
+            foreach (string app in binResult)
             {
-                apps.Add(new AppModel(app, "/usr/bin"));
+                apps.Add(new AppModel(app, binDirectory));
             }
 
-            
+            string applicationsFolder = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
 
+            string[] appResults = CommandRunner
+                .RunCommandOnMac(listFilesStart + " " + applicationsFolder + " " + listFilesEnd)
+                .Split(Environment.NewLine);
+
+            foreach (string app in appResults)
+            {
+                apps.Add(new AppModel(app, applicationsFolder));
+            }
+            
             return apps.ToArray();
         }
 
@@ -67,6 +146,7 @@ public class InstalledApps
     }
 
     // ReSharper disable once IdentifierTypo
+    [SupportedOSPlatform("linux")]
     protected static AppModel[] GetOnLinux(bool includeSnaps = false, bool includeFlatpaks = false)
     {
         if (OperatingSystem.IsLinux())
@@ -77,7 +157,7 @@ public class InstalledApps
 
             foreach (var app in binResult)
             {
-                apps.Add(new AppModel(app, "/usr/bin"));
+                apps.Add(new AppModel(app, Path.DirectorySeparatorChar + "usr" + Path.DirectorySeparatorChar + "bin"));
             }
             
             if (includeSnaps)
@@ -100,11 +180,19 @@ public class InstalledApps
         throw new PlatformNotSupportedException();
     }
 
-    public bool IsInstalled(string packageName)
+    /// <summary>
+    /// Determine whether an app is installed or not.
+    /// </summary>
+    /// <param name="appName"></param>
+    /// <returns></returns>
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("macos")]
+    public bool IsInstalled(string appName)
     {
         foreach (AppModel app in Get())
         {
-            if (app.ExecutableName.Equals(packageName))
+            if (app.ExecutableName.Equals(appName))
             {
                 return true;
             }
@@ -114,15 +202,18 @@ public class InstalledApps
     }
     
     /// <summary>
-    /// 
+    /// Gets a collection of apps and programs installed on this device.
     /// </summary>
     /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    public static AppModel[] Get()
+    /// <exception cref="PlatformNotSupportedException"></exception>
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("macos")]
+    public static IEnumerable<AppModel> Get()
     {
         if (OperatingSystem.IsWindows())
         {
-            return GetOnWindows();
+            return GetOnWindows(true);
         }
         else if (OperatingSystem.IsMacOS())
         {
@@ -137,10 +228,13 @@ public class InstalledApps
     }
     
     /// <summary>
-    /// 
+    /// Opens the specified app or program.
     /// </summary>
     /// <param name="appModel"></param>
     /// <exception cref="PlatformNotSupportedException"></exception>
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("macos")]
     public static void Open(AppModel appModel)
     {
         if (OperatingSystem.IsWindows())

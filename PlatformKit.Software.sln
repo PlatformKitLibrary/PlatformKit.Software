@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatformKit.Software", "PlatformKit.Software.csproj", "{2290FD41-C799-4607-ABCF-0D17EE6CEB7B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatformKit.Software", "src\PlatformKit.Software.csproj", "{E78A6840-DF3A-4E2C-BB92-C97A24907C48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -8,9 +8,9 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2290FD41-C799-4607-ABCF-0D17EE6CEB7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2290FD41-C799-4607-ABCF-0D17EE6CEB7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2290FD41-C799-4607-ABCF-0D17EE6CEB7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2290FD41-C799-4607-ABCF-0D17EE6CEB7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E78A6840-DF3A-4E2C-BB92-C97A24907C48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E78A6840-DF3A-4E2C-BB92-C97A24907C48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E78A6840-DF3A-4E2C-BB92-C97A24907C48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E78A6840-DF3A-4E2C-BB92-C97A24907C48}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

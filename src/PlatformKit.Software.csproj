@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
+        <Version>1.0.0-alpha.1</Version>
+        <Title>PlatformKit.Software</Title>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+        <PackageIcon>platformkit_logo_512x.jpg</PackageIcon>
+        <Authors>Alastair Lundy</Authors>
+        <Copyright>Copyright (c) 2024 Alastair Lundy</Copyright>
+        <RepositoryUrl>https://github.com/PlatformKitLibrary/PlatformKit.Software</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="PlatformKit" Version="4.0.0-beta.8" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="..\LICENSE.txt">
+            <Link>LICENSE.txt</Link>
+            <PackagePath>LICENSE.txt</PackagePath>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <None Include="..\images\logos\platformkit_logo_512x.jpg">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+            <Link>platformkit_logo_512x.jpg</Link>
+        </None>
+
+        <None Include="../README.md" Pack="true" PackagePath="\" />
+
+    </ItemGroup>
+    
+</Project>

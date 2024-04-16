@@ -23,6 +23,7 @@
 
    */
 
+using System.Runtime.Versioning;
 using PlatformKit;
 
 
@@ -36,6 +37,8 @@ namespace PlatformKit.Software
         /// </summary>
         /// <returns>Returns a list of installed snaps. Returns an empty array if no Snaps are installed.</returns>
         /// <exception cref="PlatformNotSupportedException">Throws an exception if run on a Platform other than Linux, macOS, and FreeBsd.</exception>
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("freebsd")]
         public static AppModel[] Get()
         {
             List<AppModel> apps = new List<AppModel>();
@@ -61,6 +64,13 @@ namespace PlatformKit.Software
             throw new PlatformNotSupportedException();
         }
 
+        /// <summary>
+        /// Detect if the Snap package manager is installed.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="PlatformNotSupportedException"></exception>
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("freebsd")]
         public static bool IsSnapInstalled()
         {
             if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
@@ -71,17 +81,29 @@ namespace PlatformKit.Software
             throw new PlatformNotSupportedException();
         }
         
+        /// <summary>
+        /// Determines whether a snap package is installed.
+        /// </summary>
+        /// <param name="packageName"></param>
+        /// <returns></returns>
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("freebsd")]
         public static bool IsPackageInstalled(string packageName)
         {
-            foreach (AppModel app in Get())
+            if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
             {
-                if (app.ExecutableName.Equals(packageName))
+                foreach (AppModel app in Get())
                 {
-                    return true;
-                }       
+                    if (app.ExecutableName.Equals(packageName))
+                    {
+                        return true;
+                    }       
+                }
+
+                return false;
             }
 
-            return false;
+            throw new PlatformNotSupportedException();
         }
     }
 }
