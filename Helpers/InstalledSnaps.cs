@@ -48,7 +48,7 @@ namespace PlatformKit.Software
                 {
                     string[] snapResults = CommandRunner.RunCommandOnLinux("ls /snap/bin").Split(' ');
 
-                    foreach (var snap in snapResults)
+                    foreach (string snap in snapResults)
                     {
                         apps.Add(new AppModel(snap, "/snap/bin"));
                     }
@@ -71,6 +71,19 @@ namespace PlatformKit.Software
             }
 
             throw new PlatformNotSupportedException();
+        }
+        
+        public static bool IsPackageInstalled(string packageName)
+        {
+            foreach (AppModel app in Get())
+            {
+                if (app.ExecutableName.Equals(packageName))
+                {
+                    return true;
+                }       
+            }
+
+            return false;
         }
     }
 }
