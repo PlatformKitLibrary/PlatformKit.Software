@@ -36,7 +36,7 @@ public class InstalledWinPrograms
     /// <returns></returns>
     /// <exception cref="PlatformNotSupportedException"></exception>
     [SupportedOSPlatform("windows")]
-    public static AppModel[] Get(string folderPath)
+    public static IEnumerable<AppModel> Get(string folderPath)
     {
         if (OperatingSystem.IsWindows())
         {

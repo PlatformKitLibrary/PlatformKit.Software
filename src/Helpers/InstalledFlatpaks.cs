@@ -38,7 +38,7 @@ namespace PlatformKit.Software
         /// <exception cref="PlatformNotSupportedException"></exception>
         [SupportedOSPlatform("linux")]
         [SupportedOSPlatform("freebsd")]
-        public static AppModel[] Get()
+        public static IEnumerable<AppModel> Get()
         {
             if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
             {

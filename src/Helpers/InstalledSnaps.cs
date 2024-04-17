@@ -39,7 +39,7 @@ namespace PlatformKit.Software
         /// <exception cref="PlatformNotSupportedException">Throws an exception if run on a Platform other than Linux, macOS, and FreeBsd.</exception>
         [SupportedOSPlatform("linux")]
         [SupportedOSPlatform("freebsd")]
-        public static AppModel[] Get()
+        public static IEnumerable<AppModel> Get()
         {
             List<AppModel> apps = new List<AppModel>();
 

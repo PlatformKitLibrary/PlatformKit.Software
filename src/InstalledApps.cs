@@ -36,7 +36,7 @@ public class InstalledApps
 {
 
     [SupportedOSPlatform("windows")]
-    protected static AppModel[] ExpandWinSpecialFolderPath(string directory)
+    protected static IEnumerable<AppModel> ExpandWinSpecialFolderPath(string directory)
     {
         List<AppModel> apps = new List<AppModel>();
 
@@ -50,7 +50,7 @@ public class InstalledApps
                 
                 if (item.Contains("<DIR>"))
                 {
-                    AppModel[] programs = InstalledWinPrograms.Get(item);
+                    IEnumerable<AppModel> programs = InstalledWinPrograms.Get(item);
 
                     foreach (AppModel program in programs)
                     {
@@ -66,7 +66,7 @@ public class InstalledApps
     }
     
     [SupportedOSPlatform("windows")]
-    protected static AppModel[] GetOnWindows(bool includeWindowsPrograms)
+    protected static IEnumerable<AppModel> GetOnWindows(bool includeWindowsPrograms)
     {
         if (OperatingSystem.IsWindows())
         {
@@ -110,7 +110,7 @@ public class InstalledApps
     }
     
     [SupportedOSPlatform("macos")]
-    protected static AppModel[] GetOnMac()
+    protected static IEnumerable<AppModel> GetOnMac()
     {
         if (OperatingSystem.IsMacOS())
         {
@@ -147,7 +147,7 @@ public class InstalledApps
 
     // ReSharper disable once IdentifierTypo
     [SupportedOSPlatform("linux")]
-    protected static AppModel[] GetOnLinux(bool includeSnaps = false, bool includeFlatpaks = false)
+    protected static IEnumerable<AppModel> GetOnLinux(bool includeSnaps = false, bool includeFlatpaks = false)
     {
         if (OperatingSystem.IsLinux())
         {
