@@ -78,11 +78,18 @@ namespace PlatformKit.Software
             {
                 string[] flatpakTest = CommandRunner.RunCommandOnLinux("flatpak --version").Split(' ');
 
-                if (flatpakTest[0].Contains("Flatpak"))
+                try
                 {
-                    Version.Parse(flatpakTest[1]);
+                    if (flatpakTest[0].Contains("Flatpak"))
+                    {
+                        Version.Parse(flatpakTest[1]);
 
-                    return true;
+                        return true;
+                    }
+                }
+                catch
+                {
+                    return false;
                 }
 
                 return false;
