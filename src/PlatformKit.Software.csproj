@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
         <Version>1.0.0-alpha.1</Version>
+        <PackageVersion>1.0.0-alpha.1</PackageVersion>
         <Title>PlatformKit.Software</Title>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
@@ -14,6 +15,9 @@
         <RepositoryUrl>https://github.com/PlatformKitLibrary/PlatformKit.Software</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Description>Detect Installed Software and more.</Description>
+        <PackageReleaseNotes>* Initial Release</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
