@@ -138,6 +138,14 @@ public class InstalledApps
             {
                 apps.Add(new AppModel(app, applicationsFolder));
             }
+
+            if (InstalledHomeBrewCasks.IsHomeBrewInstalled())
+            {
+                foreach (AppModel app in InstalledHomeBrewCasks.Get())
+                {
+                    apps.Add(app);
+                }
+            }
             
             return apps.ToArray();
         }
