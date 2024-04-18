@@ -139,9 +139,9 @@ public class InstalledApps
                 apps.Add(new AppModel(app, applicationsFolder));
             }
 
-            if (InstalledHomeBrewCasks.IsHomeBrewInstalled())
+            if (InstalledBrewCasks.IsHomeBrewInstalled())
             {
-                foreach (AppModel app in InstalledHomeBrewCasks.Get())
+                foreach (AppModel app in InstalledBrewCasks.Get())
                 {
                     apps.Add(app);
                 }
