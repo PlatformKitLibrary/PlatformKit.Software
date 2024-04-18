@@ -155,7 +155,7 @@ public class InstalledApps
 
     // ReSharper disable once IdentifierTypo
     [SupportedOSPlatform("linux")]
-    protected static IEnumerable<AppModel> GetOnLinux(bool includeSnaps = false, bool includeFlatpaks = false)
+    protected static IEnumerable<AppModel> GetOnLinux(bool includeSnaps = true, bool includeFlatpaks = true, bool includeBrewCasks = true)
     {
         if (OperatingSystem.IsLinux())
         {
@@ -179,6 +179,14 @@ public class InstalledApps
                 foreach (AppModel flatpak in InstalledFlatpaks.Get())
                 {
                     apps.Add(flatpak);
+                }
+            }
+
+            if (includeBrewCasks)
+            {
+                foreach (AppModel app in InstalledBrewCasks.Get())
+                {
+                    apps.Add(app);
                 }
             }
 
@@ -229,7 +237,7 @@ public class InstalledApps
         }
         else if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
         {
-            return GetOnLinux(true, true);
+            return GetOnLinux(true, true, true);
         }
 
         throw new PlatformNotSupportedException();
