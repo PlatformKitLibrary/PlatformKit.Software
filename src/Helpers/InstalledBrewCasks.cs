@@ -28,10 +28,10 @@ using PlatformKit.Mac;
 
 namespace PlatformKit.Software;
 
-public class InstalledHomeBrewCasks
+public class InstalledBrewCasks
 {
     /// <summary>
-    /// 
+    /// Returns all the detected installed brew casks.
     /// </summary>
     /// <returns></returns>
     /// <exception cref="PlatformNotSupportedException"></exception>
@@ -72,7 +72,7 @@ public class InstalledHomeBrewCasks
     }
 
     /// <summary>
-    /// Detects whether the Homebrew package manager is installed.
+    /// Determines whether the Homebrew package manager is installed or not.
     /// </summary>
     /// <returns></returns>
     /// <exception cref="PlatformNotSupportedException"></exception>
@@ -97,6 +97,35 @@ public class InstalledHomeBrewCasks
             }
 
             return false;
+        }
+
+        throw new PlatformNotSupportedException();
+    }
+
+    /// <summary>
+    /// Determines whether the specified brew cask is installed or not.
+    /// </summary>
+    /// <param name="caskName"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    public static bool IsCaskInstalled(string caskName)
+    {
+        if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
+        {
+            if (IsHomeBrewInstalled())
+            {
+                foreach (AppModel app in Get())
+                {
+                    if (app.ExecutableName.Equals(caskName))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            throw new ArgumentException();
         }
 
         throw new PlatformNotSupportedException();
