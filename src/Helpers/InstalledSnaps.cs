@@ -30,7 +30,7 @@ using PlatformKit;
 namespace PlatformKit.Software
 {
 
-    public class InstalledSnaps
+    public static class InstalledSnaps
     {
         /// <summary>
         /// Detect what Snap packages (if any) are installed on a linux distribution or on macOS.

@@ -27,7 +27,7 @@ using System.Runtime.Versioning;
 
 namespace PlatformKit.Software;
 
-public class InstalledWinPrograms
+public static class InstalledWinPrograms
 {
     /// <summary>
     /// 

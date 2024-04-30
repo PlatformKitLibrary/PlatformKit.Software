@@ -29,7 +29,7 @@ namespace PlatformKit.Software
 {
 
 // ReSharper disable once ClassNeverInstantiated.Global
-    public class InstalledFlatpaks
+    public static class InstalledFlatpaks
     {
         /// <summary>
         /// Platforms Supported On: Linux and FreeBsd.

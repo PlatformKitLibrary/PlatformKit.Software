@@ -28,7 +28,7 @@ using PlatformKit.Mac;
 
 namespace PlatformKit.Software;
 
-public class InstalledBrewCasks
+public static class InstalledBrewCasks
 {
     /// <summary>
     /// Returns all the detected installed brew casks.
