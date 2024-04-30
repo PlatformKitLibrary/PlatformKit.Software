@@ -72,12 +72,14 @@ public class InstalledApps
         {
             List<AppModel> apps = new List<AppModel>();
 
-            string programFiles = CommandRunner.RunCmdCommand("dir " + Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
+            string programFiles = CommandRunner.RunCmdCommand(
+                $"dir {Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)}");
             
-            string programFilesX86 = CommandRunner.RunCmdCommand("dir " + Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86));
+            string programFilesX86 = CommandRunner.RunCmdCommand(
+                $"dir {Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)}");
 
             string appData = CommandRunner
-                .RunCmdCommand("dir " + Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+                .RunCmdCommand($"dir {Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}");
 
             string winPrograms = CommandRunner
                 .RunCmdCommand(Environment.GetFolderPath(Environment.SpecialFolder.System));
@@ -116,12 +118,12 @@ public class InstalledApps
         {
             List<AppModel> apps = new List<AppModel>();
 
-            string binDirectory = Path.DirectorySeparatorChar + "usr" + Path.DirectorySeparatorChar + "bin";
+            string binDirectory = $"{Path.DirectorySeparatorChar}usr{Path.DirectorySeparatorChar}bin";
             
             string listFilesStart = "ls -F";
             string listFilesEnd = " | grep -v /";
             
-            string[] binResult = CommandRunner.RunCommandOnLinux(listFilesStart + " " + binDirectory + " " + listFilesEnd).Split(Environment.NewLine);
+            string[] binResult = CommandRunner.RunCommandOnLinux($"{listFilesStart} {binDirectory} {listFilesEnd}").Split(Environment.NewLine);
 
             foreach (string app in binResult)
             {
@@ -131,7 +133,7 @@ public class InstalledApps
             string applicationsFolder = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
 
             string[] appResults = CommandRunner
-                .RunCommandOnMac(listFilesStart + " " + applicationsFolder + " " + listFilesEnd)
+                .RunCommandOnMac($"{listFilesStart} {applicationsFolder} {listFilesEnd}")
                 .Split(Environment.NewLine);
 
             foreach (string app in appResults)
@@ -165,7 +167,7 @@ public class InstalledApps
 
             foreach (var app in binResult)
             {
-                apps.Add(new AppModel(app, Path.DirectorySeparatorChar + "usr" + Path.DirectorySeparatorChar + "bin"));
+                apps.Add(new AppModel(app, $"{Path.DirectorySeparatorChar}usr{Path.DirectorySeparatorChar}bin"));
             }
             
             if (includeSnaps)
