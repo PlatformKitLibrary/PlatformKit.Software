@@ -80,10 +80,10 @@ public class InstalledBrewCasks
     {
         if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
         {
-            string[] brewTest = CommandRunner.RunCommandOnLinux("brew -v").Split(' ');
-
             try
             {
+                string[] brewTest = CommandRunner.RunCommandOnLinux("brew -v").Split(' ');
+                
                 if (brewTest[0].Contains("Flatpak"))
                 {
                     Version.Parse(brewTest[1]);

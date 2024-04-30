@@ -76,10 +76,10 @@ namespace PlatformKit.Software
         {
             if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
             {
-                string[] flatpakTest = CommandRunner.RunCommandOnLinux("flatpak --version").Split(' ');
-
                 try
                 {
+                    string[] flatpakTest = CommandRunner.RunCommandOnLinux("flatpak --version").Split(' ');
+                    
                     if (flatpakTest[0].Contains("Flatpak"))
                     {
                         Version.Parse(flatpakTest[1]);
