@@ -165,7 +165,7 @@ public class InstalledApps
 
             string[] binResult = CommandRunner.RunCommandOnLinux("ls -F /usr/bin | grep -v /").Split(Environment.NewLine);
 
-            foreach (var app in binResult)
+            foreach (string app in binResult)
             {
                 apps.Add(new AppModel(app, $"{Path.DirectorySeparatorChar}usr{Path.DirectorySeparatorChar}bin"));
             }
