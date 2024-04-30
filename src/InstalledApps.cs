@@ -206,7 +206,7 @@ public class InstalledApps
     [SupportedOSPlatform("windows")]
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("macos")]
-    public bool IsInstalled(string appName)
+    public static bool IsInstalled(string appName)
     {
         foreach (AppModel app in Get())
         {
