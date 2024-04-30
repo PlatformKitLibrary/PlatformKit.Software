@@ -42,7 +42,7 @@ public class InstalledApps
 
         if (OperatingSystem.IsWindows())
         {
-            var files = directory.Split(Environment.NewLine);
+            string[] files = directory.Split(Environment.NewLine);
         
             for (int programIndex = 0; programIndex < files.Length; programIndex++)
             {

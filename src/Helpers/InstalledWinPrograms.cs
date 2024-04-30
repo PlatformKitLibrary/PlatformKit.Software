@@ -45,7 +45,7 @@ public static class InstalledWinPrograms
 
             for (int directoryIndex = 0; directoryIndex < directories.Length; directoryIndex++)
             {
-                var programs = Directory.GetFiles(directories[directoryIndex]);
+                string[] programs = Directory.GetFiles(directories[directoryIndex]);
 
                 foreach (var program in programs)
                 {
