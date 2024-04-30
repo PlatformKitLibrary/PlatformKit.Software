@@ -5,7 +5,7 @@
         <Nullable>enable</Nullable>
         <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
         <Version>1.0.0-alpha.1</Version>
-        <PackageVersion>1.0.0-alpha.1</PackageVersion>
+        <PackageVersion>1.0.0-alpha.2</PackageVersion>
         <Title>PlatformKit.Software</Title>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
@@ -17,7 +17,15 @@
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Description>Detect Installed Software and more.</Description>
-        <PackageReleaseNotes>* Initial Release</PackageReleaseNotes>
+        <PackageReleaseNotes>### Changes since 1.0.0 Alpha 1
+* Switched some instances of ``var`` to explicit types
+* Updated PlatformKit dependency from 4.0.0 Beta 8 to 4.0.0 RC 1
+* Made some classes static
+* Replaced some string concatenation with string interpolation
+* Added support for detecting installed HomeBrew Casks on Linux and macOS.
+* Changed return types of some methods
+* Improved robustness of some methods
+* Other minor tweaks.</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
