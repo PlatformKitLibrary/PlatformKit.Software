@@ -37,7 +37,7 @@ public class InstalledWingetPackages
     /// </summary>
     /// <returns></returns>
     /// <exception cref="PlatformNotSupportedException"></exception>
-    public static bool IsWingetInstalled()
+    public static bool IsWingetSupported()
     {
         if (OperatingSystem.IsWindows())
         {
@@ -64,6 +64,6 @@ public class InstalledWingetPackages
             }
         }
 
-        throw new PlatformNotSupportedException();
+        return false;
     }
 }
