@@ -39,7 +39,7 @@ public class InstalledChocolateyPackages
         {
             try
             {
-                string[] chocoTest = CommandRunner.RunCommandOnLinux("choco info").Split(' ');
+                string[] chocoTest = CommandRunner.RunCmdCommand("choco info").Split(' ');
                     
                 if (chocoTest[0].Contains("Chocolatey"))
                 {
