@@ -16,7 +16,6 @@
         <RepositoryType>git</RepositoryType>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Description>Detect Installed Software and more.</Description>
         <PackageReleaseNotes>### Changes since 1.0.0 Alpha 1
 * Switched some instances of ``var`` to explicit types
 * Updated PlatformKit dependency from 4.0.0 Beta 8 to 4.0.0 RC 1
@@ -26,6 +25,8 @@
 * Changed return types of some methods
 * Improved robustness of some methods
 * Other minor tweaks.</PackageReleaseNotes>
+        <Description>A C# library to detect installed software and more.</Description>
+        <PackageReleaseNotes></PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
