@@ -31,7 +31,39 @@ namespace PlatformKit.Software;
 
 public class InstalledWingetPackages
 {
+ 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="PlatformNotSupportedException"></exception>
+    public static bool IsWingetInstalled()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            if (!IsWingetSupported())
+            {
+                return false;
+            }
+            
+            try
+            {
+                string[] wingetTest = CommandRunner.RunCmdCommand("winget").Split(' ');
+                    
+                if (wingetTest[0].Contains("Windows") && wingetTest[1].Contains("Package") && wingetTest[2].Contains("Manager"))
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
+        throw new PlatformNotSupportedException();
+    }
+    
     /// <summary>
     /// 
     /// </summary>
