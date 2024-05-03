@@ -61,7 +61,7 @@ public class InstalledWingetPackages
             }
         }
 
-        throw new PlatformNotSupportedException();
+        return false;
     }
     
     /// <summary>
