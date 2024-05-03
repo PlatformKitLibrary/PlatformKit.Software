@@ -23,10 +23,39 @@
 
    */
 
+using System.Runtime.Versioning;
+
 namespace PlatformKit.Software;
 
 public class InstalledChocolateyPackages
 {
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="PlatformNotSupportedException"></exception>
+    [SupportedOSPlatform("windows")]
+    public static IEnumerable<AppModel> Get()
+    {
+        if (IsChocolateyInstalled())
+        {
+            List<AppModel> apps = new List<AppModel>();
+            
+            string[] chocoResults = CommandRunner.RunCmdCommand("choco list -l -r --id-only").Split(Environment.NewLine);
+
+            string chocolateyLocation = CommandRunner.RunPowerShellCommand("$env:ChocolateyInstall");
+            
+            foreach (string package in chocoResults)
+            {
+                apps.Add(new AppModel(package, chocolateyLocation));
+            }
+
+            return apps.ToArray();
+        }
+
+        throw new PlatformNotSupportedException();
+    }
     
     /// <summary>
     /// 
