@@ -23,6 +23,7 @@
 
    */
 
+using System.Runtime.Versioning;
 using AlastairLundy.Extensions.System.VersionExtensions;
 
 using PlatformKit.Windows;
@@ -31,12 +32,16 @@ namespace PlatformKit.Software;
 
 public class InstalledWingetPackages
 {
- 
     /// <summary>
     /// 
     /// </summary>
     /// <returns></returns>
     /// <exception cref="PlatformNotSupportedException"></exception>
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    [SupportedOSPlatform("windows")]
     public static bool IsWingetInstalled()
     {
         if (OperatingSystem.IsWindows())
