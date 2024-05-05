@@ -24,6 +24,7 @@
    */
 
 using System.Runtime.Versioning;
+using System.Text;
 using AlastairLundy.Extensions.System.VersionExtensions;
 
 using PlatformKit.Windows;
@@ -37,6 +38,52 @@ public class InstalledWingetPackages
     /// </summary>
     /// <returns></returns>
     /// <exception cref="PlatformNotSupportedException"></exception>
+    [SupportedOSPlatform("windows")]
+    public static IEnumerable<AppModel> Get()
+    {
+        if (IsWingetSupported() && IsWingetInstalled())
+        {
+            List<AppModel> apps = new List<AppModel>();
+
+            string[] results = CommandRunner.RunCmdCommand("winget list --source=winget")
+                .Replace("-", string.Empty).Split(Environment.NewLine);
+            
+            string wingetLocation = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+
+            int idPosition = results[0].IndexOf("Id", StringComparison.Ordinal);
+            
+            for (int index = 1; index < results.Length; index++)
+            {
+                string line = results[index];
+                
+                StringBuilder stringBuilder = new StringBuilder();
+
+                for (int charIndex = 0; charIndex < line.Length; charIndex++)
+                {
+                    if (charIndex < (idPosition - 1))
+                    {
+                        stringBuilder.Append(line[charIndex]);
+                    }
+                    else
+                    {
+                        string appName = stringBuilder.ToString();
+                        
+                        if (appName.Contains("  "))
+                        {
+                           appName = appName.Replace("  ", string.Empty);
+                        }
+                        apps.Add(new AppModel(appName, wingetLocation));
+                        break;
+                    }
+                }
+            }
+
+            return apps.ToArray();
+        }
+
+        throw new PlatformNotSupportedException();
+    }
+    
     /// <summary>
     /// 
     /// </summary>
