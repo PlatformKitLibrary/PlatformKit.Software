@@ -23,7 +23,7 @@
  */
 
 // ReSharper disable InconsistentNaming
-namespace InstallWith.Library.Enums
+namespace PlatformKit.Software.Enums
 {
     public enum PackageManager
     {
