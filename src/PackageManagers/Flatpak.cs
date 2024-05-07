@@ -30,7 +30,7 @@ namespace PlatformKit.Software.PackageManagers;
 
 
 // ReSharper disable once ClassNeverInstantiated.Global
-public static class Flatpaks
+public static class Flatpak
 {
     
     /// <summary>

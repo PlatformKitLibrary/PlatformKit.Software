@@ -28,7 +28,7 @@ using PlatformKit;
 
 namespace PlatformKit.Software.PackageManagers;
 
-public static class Snaps
+public static class Snap
 {
     /// <summary>
     /// Detect what Snap packages (if any) are installed on a linux distribution or on macOS.

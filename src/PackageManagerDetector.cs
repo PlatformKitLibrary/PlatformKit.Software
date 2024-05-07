@@ -69,12 +69,12 @@ public class PackageManagerDetector
                 case LinuxDistroBase.Fedora or LinuxDistroBase.RHEL:
                     return PackageManager.DNF;
                 default:
-                    if(Flatpaks.IsFlatpakInstalled())
+                    if(Flatpak.IsFlatpakInstalled())
                     {
                         return PackageManager.Flatpak;
                     }
 
-                    if(Snaps.IsSnapInstalled())
+                    if(Snap.IsSnapInstalled())
                     {
                         return PackageManager.Snap;
                     }
