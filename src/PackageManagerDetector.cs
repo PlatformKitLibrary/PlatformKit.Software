@@ -22,13 +22,12 @@
     SOFTWARE.
  */
 
-using InstallWith.Library.Enums;
-
 using PlatformKit.Linux;
 using PlatformKit.Linux.Enums;
 using PlatformKit.Windows;
 
 using PlatformKit.Software.PackageManagers;
+using PlatformKit.Software.Enums;
 
 // ReSharper disable RedundantIfElseBlock
 

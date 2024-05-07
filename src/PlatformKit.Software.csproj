@@ -4,8 +4,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
-        <Version>1.0.0-alpha.1</Version>
-        <PackageVersion>1.0.0-alpha.2</PackageVersion>
+        <Version>1.0.0-alpha.3</Version>
+        <PackageVersion>1.0.0-alpha.3</PackageVersion>
         <Title>PlatformKit.Software</Title>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
@@ -17,11 +17,18 @@
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Description>A C# library to detect installed software and more.</Description>
-        <PackageReleaseNotes></PackageReleaseNotes>
+        <PackageReleaseNotes>### Changes since 1.0.0 Alpha 2
+* Added helper classes for Winget, HomeBrew, Chocolatey, Snap, and Flatpak
+* Added ``PackageManager`` enum
+* Added initial work on PackageManagerDetector
+* Updated PlatformKit dependency to 4.x
+
+### Full Changelog
+**Full Changelog**: https://github.com/PlatformKitLibrary/PlatformKit.Software/compare/1.0.0-alpha.2...1.0.0-alpha.3</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="PlatformKit" Version="4.0.0" />
+      <PackageReference Include="PlatformKit" Version="4.*" />
     </ItemGroup>
 
     <ItemGroup>
