@@ -42,7 +42,8 @@ public class HomeBrew : AbstractPackageManager
     /// 
     /// </summary>
     /// <returns></returns>
-    /// <exception cref="PlatformNotSupportedException"></exception>
+    /// <exception cref="PackageManagerNotInstalledException"></exception>
+    /// <exception cref="PackageManagerNotSupportedException"></exception>
     [SupportedOSPlatform("macos")]
     [SupportedOSPlatform("maccatalyst")]
     [SupportedOSPlatform("linux")]
@@ -75,7 +76,8 @@ public class HomeBrew : AbstractPackageManager
     /// Returns all the detected installed brew casks.
     /// </summary>
     /// <returns></returns>
-    /// <exception cref="PlatformNotSupportedException"></exception>
+    /// <exception cref="PackageManagerNotInstalledException"></exception>
+    /// <exception cref="PackageManagerNotSupportedException"></exception>
     [SupportedOSPlatform("macos")]
     [SupportedOSPlatform("maccatalyst")]
     [SupportedOSPlatform("linux")]
@@ -131,7 +133,7 @@ public class HomeBrew : AbstractPackageManager
     /// Determines whether the Homebrew package manager is installed or not.
     /// </summary>
     /// <returns></returns>
-    /// <exception cref="PlatformNotSupportedException"></exception>
+    /// <exception cref="PackageManagerNotSupportedException"></exception>
     [SupportedOSPlatform("macos")]
     [SupportedOSPlatform("maccatalyst")]
     [SupportedOSPlatform("linux")]
