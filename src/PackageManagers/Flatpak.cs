@@ -39,6 +39,49 @@ public class Flatpak : AbstractPackageManager
         PackageManagerName = "Flatpak";
     }
     
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    public override IEnumerable<AppModel> GetUpdatable()
+    {
+        if (DoesPackageManagerSupportThisOperatingSystem())
+        {
+            if (!IsPackageManagerInstalled())
+            {
+                throw new PackageManagerNotInstalledException(PackageManagerName);
+            }
+            
+            List<AppModel> apps = new List<AppModel>();
+            
+            string[] flatpakResults = CommandRunner.RunCommandOnLinux("flatpak update -n")
+                .Split(Environment.NewLine);
+
+            string installLocation = CommandRunner.RunCommandOnLinux("flatpak --installations");
+
+            if (flatpakResults.Length > 1)
+            {
+                for (int index = 1; index < flatpakResults.Length; index++)
+                {
+                    string flatpakResult = flatpakResults[index];
+
+                    if (!flatpakResult.Equals(string.Empty) && flatpakResult.Contains('.') && !flatpakResult.Contains("ID"))
+                    {
+                        string result = flatpakResult.Split(" ")[1];
+                    
+                        apps.Add(new AppModel(result, installLocation));
+                    }
+                }
+            }
+            else
+            {
+                apps.Clear();
+            }
+
+            return apps.ToArray();
+        }
+
+        throw new PackageManagerNotSupportedException(PackageManagerName);
+    }
+
     /// <summary>
     /// Platforms Supported On: Linux and FreeBsd.
     /// </summary>
