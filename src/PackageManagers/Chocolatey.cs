@@ -37,6 +37,12 @@ public class Chocolatey : AbstractPackageManager
         PackageManagerName = "Chocolatey";
     }
     
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="PackageManagerNotInstalledException"></exception>
+    /// <exception cref="PackageManagerNotSupportedException"></exception>
     [SupportedOSPlatform("windows")]
     public override IEnumerable<AppModel> GetUpdatable()
     {
