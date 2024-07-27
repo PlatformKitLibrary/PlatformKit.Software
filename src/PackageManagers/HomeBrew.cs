@@ -69,10 +69,17 @@ public class HomeBrew : AbstractPackageManager
 
                     string installLocation;
                     string executableName = nameArr[0].Replace("bin/", string.Empty);
-                
-                    if (MacOsAnalyzer.IsAppleSiliconMac())
+
+                    if (OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst())
                     {
-                        installLocation = nameArr[1].Replace("..", "/opt/homebrew");
+                        if (MacOsAnalyzer.IsAppleSiliconMac())
+                        {
+                            installLocation = nameArr[1].Replace("..", "/opt/homebrew");
+                        }
+                        else
+                        {
+                            installLocation = nameArr[1];
+                        }
                     }
                     else
                     {
