@@ -29,7 +29,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AlastairLundy.Extensions.System" Version="5.0.1" />
+      <PackageReference Include="AlastairLundy.Extensions.System" Version="5.*" />
       <PackageReference Include="PlatformKit" Version="4.*" />
     </ItemGroup>
 
