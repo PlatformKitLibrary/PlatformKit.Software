@@ -90,7 +90,7 @@ public static class HomeBrew
             {
                 string[] brewTest = CommandRunner.RunCommandOnLinux("brew -v").Split(' ');
                 
-                if (brewTest[0].Contains("Flatpak"))
+                if (brewTest[0].Contains("brew"))
                 {
                     Version.Parse(brewTest[1]);
 
