@@ -43,7 +43,8 @@ public class Winget : AbstractPackageManager
     /// 
     /// </summary>
     /// <returns></returns>
-    /// <exception cref="PlatformNotSupportedException"></exception>
+    /// <exception cref="PackageManagerNotInstalledException"></exception>
+    /// <exception cref="PackageManagerNotSupportedException"></exception>
     [SupportedOSPlatform("windows")]
     public override IEnumerable<AppModel> GetUpdatable()
     {
@@ -104,7 +105,8 @@ public class Winget : AbstractPackageManager
     /// 
     /// </summary>
     /// <returns></returns>
-    /// <exception cref="PlatformNotSupportedException"></exception>
+    /// <exception cref="PackageManagerNotInstalledException"></exception>
+    /// <exception cref="PackageManagerNotSupportedException"></exception>
     [SupportedOSPlatform("windows")]
     public override IEnumerable<AppModel> GetInstalled()
     {

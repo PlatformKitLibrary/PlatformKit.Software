@@ -28,7 +28,10 @@ namespace PlatformKit.Software.Internal.Exceptions;
 
 public class PackageManagerNotInstalledException : Exception
 {
-
+    /// <summary>
+    /// An exception that is thrown when a required Package Manager is not installed.
+    /// </summary>
+    /// <param name="packageManagerName">The name of the package manager.</param>
     public PackageManagerNotInstalledException(string packageManagerName) : base(Resources.Exceptions_PackageManagerNotInstalled.Replace("{x}", packageManagerName))
     {
         
