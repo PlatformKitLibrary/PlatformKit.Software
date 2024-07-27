@@ -69,16 +69,20 @@ public class PackageManagerDetector
                 case LinuxDistroBase.Fedora or LinuxDistroBase.RHEL:
                     return PackageManager.DNF;
                 default:
-                    if(Flatpak.IsFlatpakInstalled())
+                    Snap snap = new Snap();
+                    HomeBrew homeBrew = new HomeBrew();
+                    Flatpak flatpak = new Flatpak();
+                    
+                    if(flatpak.IsPackageManagerInstalled())
                     {
                         return PackageManager.Flatpak;
                     }
 
-                    if(Snap.IsSnapInstalled())
+                    if(snap.IsPackageManagerInstalled())
                     {
                         return PackageManager.Snap;
                     }
-                    if(HomeBrew.IsHomeBrewInstalled())
+                    if(homeBrew.IsPackageManagerInstalled())
                     {
                         return PackageManager.Homebrew;
                     }
@@ -87,9 +91,11 @@ public class PackageManagerDetector
             }
 
        }
-       if(OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst()) 
+       if(OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst())
        {
-            if(HomeBrew.IsHomeBrewInstalled()) 
+           HomeBrew homeBrew = new HomeBrew();
+           
+            if(homeBrew.IsPackageManagerInstalled()) 
             {
                 return PackageManager.Homebrew;
             }
@@ -106,9 +112,14 @@ public class PackageManagerDetector
                 return PackageManager.Winget;
             }
 
-            if (Chocolatey.IsChocolateySupported() && Chocolatey.IsChocolateyInstalled())
+            Chocolatey chocolatey = new Chocolatey();
+            
+            if (chocolatey.DoesPackageManagerSupportThisOperatingSystem())
             {
-                return PackageManager.Chocolatey;
+                if (chocolatey.IsPackageManagerInstalled())
+                {
+                    return PackageManager.Chocolatey;
+                }
             }
 
             return PackageManager.NotSupported;

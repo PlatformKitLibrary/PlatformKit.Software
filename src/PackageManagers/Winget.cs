@@ -26,22 +26,34 @@ using System.Runtime.Versioning;
 using System.Text;
 using AlastairLundy.Extensions.System;
 using PlatformKit;
+using PlatformKit.Software.Abstractions;
+using PlatformKit.Software.Internal.Exceptions;
 using PlatformKit.Windows;
 
 namespace PlatformKit.Software.PackageManagers;
 
-public class Winget
+public class Winget : AbstractPackageManager
 {
+    public Winget()
+    {
+        PackageManagerName = "Winget";
+    }
+    
     /// <summary>
     /// 
     /// </summary>
     /// <returns></returns>
     /// <exception cref="PlatformNotSupportedException"></exception>
     [SupportedOSPlatform("windows")]
-    public static IEnumerable<AppModel> GetUpdatable()
+    public override IEnumerable<AppModel> GetUpdatable()
     {
-        if (IsWingetSupported() && IsWingetInstalled())
+        if (DoesPackageManagerSupportThisOperatingSystem())
         {
+            if (!IsPackageManagerInstalled())
+            {
+                throw new PackageManagerNotInstalledException(PackageManagerName);
+            }
+            
             List<AppModel> apps = new List<AppModel>();
 
             string[] results = CommandRunner.RunCmdCommand("winget upgrade --source=winget")
@@ -85,7 +97,7 @@ public class Winget
             return apps.ToArray();
         }
 
-        throw new PlatformNotSupportedException();
+        throw new PackageManagerNotSupportedException(PackageManagerName);
     }
     
     /// <summary>
@@ -94,10 +106,15 @@ public class Winget
     /// <returns></returns>
     /// <exception cref="PlatformNotSupportedException"></exception>
     [SupportedOSPlatform("windows")]
-    public static IEnumerable<AppModel> GetInstalled()
+    public override IEnumerable<AppModel> GetInstalled()
     {
-        if (IsWingetSupported() && IsWingetInstalled())
+        if (DoesPackageManagerSupportThisOperatingSystem())
         {
+            if (!IsPackageManagerInstalled())
+            {
+                throw new PackageManagerNotInstalledException(PackageManagerName);
+            }
+            
             List<AppModel> apps = new List<AppModel>();
 
             string[] results = CommandRunner.RunCmdCommand("winget list --source=winget")
@@ -136,7 +153,7 @@ public class Winget
             return apps.ToArray();
         }
 
-        throw new PlatformNotSupportedException();
+        throw new PackageManagerNotSupportedException(PackageManagerName);
     }
     
     /// <summary>
@@ -144,11 +161,11 @@ public class Winget
     /// </summary>
     /// <returns></returns>
     [SupportedOSPlatform("windows")]
-    public static bool IsWingetInstalled()
+    public override bool IsPackageManagerInstalled()
     {
         if (OperatingSystem.IsWindows())
         {
-            if (!IsWingetSupported())
+            if (!DoesPackageManagerSupportThisOperatingSystem())
             {
                 return false;
             }
@@ -175,8 +192,7 @@ public class Winget
     /// 
     /// </summary>
     /// <returns></returns>
-    /// <exception cref="PlatformNotSupportedException"></exception>
-    public static bool IsWingetSupported()
+    public override bool DoesPackageManagerSupportThisOperatingSystem()
     {
         if (OperatingSystem.IsWindows())
         {

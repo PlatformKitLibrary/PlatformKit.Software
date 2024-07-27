@@ -25,13 +25,19 @@
 using System.Runtime.Versioning;
 
 using PlatformKit;
+using PlatformKit.Software.Abstractions;
+using PlatformKit.Software.Internal.Exceptions;
 
 namespace PlatformKit.Software.PackageManagers;
 
 
 // ReSharper disable once ClassNeverInstantiated.Global
-public static class Flatpak
+public class Flatpak : AbstractPackageManager
 {
+    public Flatpak()
+    {
+        PackageManagerName = "Flatpak";
+    }
     
     /// <summary>
     /// Platforms Supported On: Linux and FreeBsd.
@@ -40,14 +46,17 @@ public static class Flatpak
     /// <exception cref="PlatformNotSupportedException"></exception>
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
-    public static IEnumerable<AppModel> GetInstalled()
+    public override IEnumerable<AppModel> GetInstalled()
     {
-        if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
+        if (DoesPackageManagerSupportThisOperatingSystem())
         {
-            List<AppModel> apps = new List<AppModel>();
-
-            if (IsFlatpakInstalled())
+            if (!IsPackageManagerInstalled())
             {
+                throw new PackageManagerNotInstalledException(PackageManagerName);
+            }
+            
+            List<AppModel> apps = new List<AppModel>();
+            
                 string[] flatpakResults = CommandRunner.RunCommandOnLinux("flatpak list --columns=name")
                 .Split(Environment.NewLine);
 
@@ -59,13 +68,9 @@ public static class Flatpak
                 }
 
                 return apps.ToArray();
-            }
-
-            apps.Clear();
-            return apps.ToArray();
         }
 
-        throw new PlatformNotSupportedException();
+        throw new PackageManagerNotSupportedException(PackageManagerName);
     }
 
     /// <summary>
@@ -74,9 +79,9 @@ public static class Flatpak
     /// <returns></returns>
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
-    public static bool IsFlatpakInstalled()
+    public override bool IsPackageManagerInstalled()
     {
-        if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
+        if (DoesPackageManagerSupportThisOperatingSystem())
         {
             try
             {
@@ -97,35 +102,15 @@ public static class Flatpak
             return false;
         }
 
-        throw new PlatformNotSupportedException();
+        throw new PackageManagerNotSupportedException(PackageManagerName);
     }
     
     /// <summary>
     /// 
     /// </summary>
     /// <returns></returns>
-    public static bool IsFlatpakSupported()
+    public override bool DoesPackageManagerSupportThisOperatingSystem()
     {
         return OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD();
-    }
-
-    /// <summary>
-    /// Determines whether a flatpak package is installed.
-    /// </summary>
-    /// <param name="packageName"></param>
-    /// <returns></returns>
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    public static bool IsPackageInstalled(string packageName)
-    {
-        foreach (AppModel app in GetInstalled())
-        {
-            if (app.ExecutableName.Equals(packageName))
-            {
-                return true;
-            }       
-        }
-
-        return false;
     }
 }

@@ -24,22 +24,33 @@
 
 using System.Runtime.Versioning;
 
+using PlatformKit.Software.Abstractions;
 using PlatformKit.Software.Internal.Exceptions;
 
 namespace PlatformKit.Software.PackageManagers;
 
-public static class Snap
+public class Snap : AbstractPackageManager
 {
+    public Snap()
+    {
+        PackageManagerName = "Snap";
+    }
+    
     /// <summary>
     /// Gets the names of updatable Snap packages.
     /// </summary>
     /// <returns>the updatable Snap packages as AppModel objects.</returns>
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
-    public static IEnumerable<AppModel> GetUpdatable()
+    public override IEnumerable<AppModel> GetUpdatable()
     {
-        if (IsSnapSupported() && IsSnapInstalled())
+        if (DoesPackageManagerSupportThisOperatingSystem())
         {
+            if (!IsPackageManagerInstalled())
+            {
+                throw new PackageManagerNotInstalledException(PackageManagerName);
+            }
+            
             List<AppModel> apps = new List<AppModel>();
 
             string[] snapUpdates = CommandRunner.RunCommandOnLinux("snap refresh --list").Split(Environment.NewLine);
@@ -64,7 +75,7 @@ public static class Snap
             return apps.ToArray();
         }
 
-        throw new PackageManagerNotSupportedException("snap");
+        throw new PackageManagerNotSupportedException(PackageManagerName);
     }
     
     /// <summary>
@@ -74,10 +85,15 @@ public static class Snap
     /// <exception cref="PlatformNotSupportedException">Throws an exception if run on a Platform other than Linux, macOS, and FreeBsd.</exception>
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
-    public static IEnumerable<AppModel> GetInstalled()
+    public override IEnumerable<AppModel> GetInstalled()
     {
-        if (IsSnapSupported() && IsSnapInstalled())
+        if (DoesPackageManagerSupportThisOperatingSystem())
         {
+            if (!IsPackageManagerInstalled())
+            {
+                throw new PackageManagerNotInstalledException(PackageManagerName);
+            }
+            
             List<AppModel> apps = new List<AppModel>();
 
             string[] snapResults = CommandRunner.RunCommandOnLinux(
@@ -92,10 +108,10 @@ public static class Snap
             return apps.ToArray();
         }
 
-        throw new PackageManagerNotSupportedException("snap");
+        throw new PackageManagerNotSupportedException(PackageManagerName);
     }
 
-    public static bool IsSnapSupported()
+    public override bool DoesPackageManagerSupportThisOperatingSystem()
     {
         return OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD();
     }
@@ -107,38 +123,13 @@ public static class Snap
     /// <exception cref="PlatformNotSupportedException"></exception>
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
-    public static bool IsSnapInstalled()
+    public override bool IsPackageManagerInstalled()
     {
-        if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
+        if (DoesPackageManagerSupportThisOperatingSystem())
         {
-            return  Directory.Exists($"{Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin");
+            return Directory.Exists($"{Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin");
         }
 
-        throw new PackageManagerNotInstalledException("snap");
-    }
-        
-    /// <summary>
-    /// Determines whether a snap package is installed.
-    /// </summary>
-    /// <param name="packageName"></param>
-    /// <returns></returns>
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    public static bool IsPackageInstalled(string packageName)
-    {
-        if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
-        {
-            foreach (AppModel app in GetInstalled())
-            {
-                if (app.ExecutableName.Equals(packageName))
-                {
-                    return true;
-                }       
-            }
-
-            return false;
-        }
-
-        throw new PackageManagerNotSupportedException("snap");
+        throw new PackageManagerNotInstalledException(PackageManagerName);
     }
 }

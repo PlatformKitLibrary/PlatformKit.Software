@@ -25,26 +25,62 @@
 using System.Runtime.Versioning;
 
 using PlatformKit.Mac;
+using PlatformKit.Software.Abstractions;
 using PlatformKit.Software.Internal.Exceptions;
 
 namespace PlatformKit.Software.PackageManagers;
 
-public static class HomeBrew
+public class HomeBrew : AbstractPackageManager
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="PlatformNotSupportedException"></exception>
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("maccatalyst")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    public override IEnumerable<AppModel> GetUpdatable()
+    {
+        if (DoesPackageManagerSupportThisOperatingSystem())
+        {
+            if (!IsPackageManagerInstalled())
+            {
+                throw new PackageManagerNotInstalledException("HomeBrew");
+            }
+            
+            List<AppModel> apps = new List<AppModel>();
+
+            string[] caskUpdates = CommandRunner.RunCommandOnMac("").Split(Environment.NewLine);
+
+            foreach (string caskUpdate in caskUpdates)
+            {
+                
+            }
+
+            return apps.ToArray();
+        }
+
+        throw new PackageManagerNotSupportedException("HomeBrew");
+    }
+    
     /// <summary>
     /// Returns all the detected installed brew casks.
     /// </summary>
     /// <returns></returns>
     /// <exception cref="PlatformNotSupportedException"></exception>
     [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("maccatalyst")]
     [SupportedOSPlatform("linux")]
-    public static IEnumerable<AppModel> GetInstalled()
+    [SupportedOSPlatform("freebsd")]
+    public override IEnumerable<AppModel> GetInstalled()
     {
-        if (IsHomeBrewSupported())
+        if (DoesPackageManagerSupportThisOperatingSystem())
         {
             List<AppModel> apps = new List<AppModel>();
 
-            if (IsHomeBrewInstalled())
+            if (IsPackageManagerInstalled())
             {
                 string[] casks = CommandRunner.RunCommandOnMac("ls -l bin").Split(Environment.NewLine);
 
@@ -72,7 +108,15 @@ public static class HomeBrew
         throw new PackageManagerNotSupportedException("HomeBrew");
     }
     
-    public static bool IsHomeBrewSupported()
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("maccatalyst")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    public override bool DoesPackageManagerSupportThisOperatingSystem()
     {
         return OperatingSystem.IsLinux() || OperatingSystem.IsMacOS() || OperatingSystem.IsFreeBSD();
     }
@@ -82,9 +126,13 @@ public static class HomeBrew
     /// </summary>
     /// <returns></returns>
     /// <exception cref="PlatformNotSupportedException"></exception>
-    public static bool IsHomeBrewInstalled()
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("maccatalyst")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    public override bool IsPackageManagerInstalled()
     {
-        if (IsHomeBrewSupported())
+        if (DoesPackageManagerSupportThisOperatingSystem())
         {
             try
             {
@@ -103,35 +151,6 @@ public static class HomeBrew
             }
 
             return false;
-        }
-
-        throw new PackageManagerNotSupportedException("HomeBrew");
-    }
-
-    /// <summary>
-    /// Determines whether the specified brew cask is installed or not.
-    /// </summary>
-    /// <param name="caskName"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException"></exception>
-    public static bool IsCaskInstalled(string caskName)
-    {
-        if (IsHomeBrewSupported())
-        {
-            if (IsHomeBrewInstalled())
-            {
-                foreach (AppModel app in GetInstalled())
-                {
-                    if (app.ExecutableName.Equals(caskName))
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
-            throw new PackageManagerNotInstalledException("HomeBrew");
         }
 
         throw new PackageManagerNotSupportedException("HomeBrew");

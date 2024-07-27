@@ -49,7 +49,9 @@ public class InstalledLinuxApps
 
             if (includeBrewCasks)
             {
-                foreach (AppModel app in HomeBrew.GetInstalled())
+                HomeBrew homeBrew = new HomeBrew();
+                
+                foreach (AppModel app in homeBrew.GetInstalled())
                 {
                     apps.Add(app);
                 }
