@@ -59,11 +59,28 @@ public class HomeBrew : AbstractPackageManager
             
             List<AppModel> apps = new List<AppModel>();
 
-            string[] caskUpdates = CommandRunner.RunCommandOnMac("").Split(Environment.NewLine);
+            string[] caskUpdates = CommandRunner.RunCommandOnMac("brew outdated").Split(Environment.NewLine);
 
             foreach (string caskUpdate in caskUpdates)
             {
+                if (caskUpdate.Equals(string.Empty) == true)
+                {
+                    string[] nameArr = caskUpdate.Replace("->", string.Empty).Replace(" ", string.Empty).Split(" ");
+
+                    string installLocation;
+                    string executableName = nameArr[0].Replace("bin/", string.Empty);
                 
+                    if (MacOsAnalyzer.IsAppleSiliconMac())
+                    {
+                        installLocation = nameArr[1].Replace("..", "/opt/homebrew");
+                    }
+                    else
+                    {
+                        installLocation = nameArr[1];
+                    }
+                
+                    apps.Add(new AppModel(executableName, installLocation));
+                }
             }
 
             return apps.ToArray();
