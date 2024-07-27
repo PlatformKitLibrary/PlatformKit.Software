@@ -24,8 +24,8 @@
 
 using System.Runtime.Versioning;
 
-using PlatformKit;
 using PlatformKit.Mac;
+using PlatformKit.Software.Internal.Exceptions;
 
 namespace PlatformKit.Software.PackageManagers;
 
@@ -40,7 +40,7 @@ public static class HomeBrew
     [SupportedOSPlatform("linux")]
     public static IEnumerable<AppModel> GetInstalled()
     {
-        if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
+        if (IsHomeBrewSupported())
         {
             List<AppModel> apps = new List<AppModel>();
 
@@ -69,7 +69,12 @@ public static class HomeBrew
             return apps.ToArray();
         }
 
-        throw new PlatformNotSupportedException();
+        throw new PackageManagerNotSupportedException("HomeBrew");
+    }
+    
+    public static bool IsHomeBrewSupported()
+    {
+        return OperatingSystem.IsLinux() || OperatingSystem.IsMacOS() || OperatingSystem.IsFreeBSD();
     }
 
     /// <summary>
@@ -79,7 +84,7 @@ public static class HomeBrew
     /// <exception cref="PlatformNotSupportedException"></exception>
     public static bool IsHomeBrewInstalled()
     {
-        if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
+        if (IsHomeBrewSupported())
         {
             try
             {
@@ -100,7 +105,7 @@ public static class HomeBrew
             return false;
         }
 
-        throw new PlatformNotSupportedException();
+        throw new PackageManagerNotSupportedException("HomeBrew");
     }
 
     /// <summary>
@@ -111,7 +116,7 @@ public static class HomeBrew
     /// <exception cref="ArgumentException"></exception>
     public static bool IsCaskInstalled(string caskName)
     {
-        if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
+        if (IsHomeBrewSupported())
         {
             if (IsHomeBrewInstalled())
             {
@@ -126,9 +131,9 @@ public static class HomeBrew
                 return false;
             }
 
-            throw new ArgumentException();
+            throw new PackageManagerNotInstalledException("HomeBrew");
         }
 
-        throw new PlatformNotSupportedException();
+        throw new PackageManagerNotSupportedException("HomeBrew");
     }
 }

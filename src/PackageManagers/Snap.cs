@@ -24,7 +24,7 @@
 
 using System.Runtime.Versioning;
 
-using PlatformKit;
+using PlatformKit.Software.Internal.Exceptions;
 
 namespace PlatformKit.Software.PackageManagers;
 
@@ -55,7 +55,7 @@ public static class Snap
                 return apps.ToArray();
         }
 
-        throw new PlatformNotSupportedException();
+        throw new PackageManagerNotSupportedException("snap");
     }
 
     public static bool IsSnapSupported()
@@ -77,7 +77,7 @@ public static class Snap
             return  Directory.Exists($"{Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin");
         }
 
-        throw new PlatformNotSupportedException();
+        throw new PackageManagerNotInstalledException("snap");
     }
         
     /// <summary>
@@ -102,6 +102,6 @@ public static class Snap
             return false;
         }
 
-        throw new PlatformNotSupportedException();
+        throw new PackageManagerNotSupportedException("snap");
     }
 }
