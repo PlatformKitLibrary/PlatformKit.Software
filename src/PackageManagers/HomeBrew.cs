@@ -112,21 +112,34 @@ public class HomeBrew : AbstractPackageManager
                 {
                     string[] nameArr = cask.Replace("->", string.Empty).Replace(" ", string.Empty).Split(" ");
 
-                    if (MacOsAnalyzer.IsAppleSiliconMac())
+                    string executableName = nameArr[0].Replace("bin/", string.Empty);
+                    string installLocation;
+                    
+                    if (OperatingSystem.IsMacOS())
                     {
-                        apps.Add(new AppModel(nameArr[0].Replace("bin/", string.Empty), nameArr[1].Replace("..", "/opt/homebrew")));
+                        if(MacOsAnalyzer.IsAppleSiliconMac())
+                        {
+                            installLocation = nameArr[1].Replace("..", "/opt/homebrew");
+                        }
+                        else
+                        {
+                            installLocation = nameArr[1];
+                        }
                     }
                     else
                     {
-                        apps.Add(new AppModel(nameArr[0].Replace("bin/", string.Empty), nameArr[1]));
+                        installLocation = nameArr[1];
                     }
+                    
+                    apps.Add(new AppModel(executableName, installLocation));
                 }
 
                 return apps;
             }
-            
-            apps.Clear();
-            return apps.ToArray();
+            else
+            {
+                throw new PackageManagerNotInstalledException(PackageManagerName);
+            }
         }
 
         throw new PackageManagerNotSupportedException("HomeBrew");
