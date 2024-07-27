@@ -22,7 +22,7 @@
     SOFTWARE.
  */
 
-using PlatformKit.Software.Internal.Exceptions;
+using PlatformKit.Software.Exceptions;
 
 namespace PlatformKit.Software.Abstractions;
 

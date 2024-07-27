@@ -25,7 +25,7 @@
 using System.Runtime.Versioning;
 
 using PlatformKit.Software.Abstractions;
-using PlatformKit.Software.Internal.Exceptions;
+using PlatformKit.Software.Exceptions;
 
 namespace PlatformKit.Software.PackageManagers;
 
