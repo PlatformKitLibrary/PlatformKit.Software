@@ -36,7 +36,7 @@ public class InstalledMacApps
     [SupportedOSPlatform("macos")]
     public static IEnumerable<AppModel> GetInstalled()
     {
-        if (OperatingSystem.IsMacOS())
+        if (OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst())
         {
             List<AppModel> apps = new List<AppModel>();
 
