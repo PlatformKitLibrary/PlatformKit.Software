@@ -37,7 +37,38 @@ public abstract class AbstractPackageManager
     public abstract IEnumerable<AppModel> GetUpdatable();
     public abstract IEnumerable<AppModel> GetInstalled();
 
-    public virtual bool IsPackageInstalled(string packageName)
+    private string CleanUpExecutableName(string executableName)
+    {
+        string newName = executableName;
+        
+        if (newName.EndsWith(".exe"))
+        {
+            newName = newName.Replace(".exe", string.Empty);
+        }
+        if (newName.EndsWith(".msi"))
+        {
+            newName = newName.Replace(".msi", string.Empty);
+        }
+        if (newName.EndsWith(".appx"))
+        {
+            newName = newName.Replace(".appx", string.Empty);
+        }
+        if (newName.EndsWith(".app"))
+        {
+            newName = newName.Replace(".app", string.Empty);
+        }
+
+        return newName;
+    }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="packageName"></param>
+    /// <returns></returns>
+    /// <exception cref="PackageManagerNotInstalledException"></exception>
+    /// <exception cref="PackageManagerNotSupportedException"></exception>
+    public bool IsPackageInstalled(string packageName)
     {
         if (DoesPackageManagerSupportThisOperatingSystem())
         {
@@ -47,10 +78,14 @@ public abstract class AbstractPackageManager
             }
 
             bool foundPackage = false;
+
+            string newPackageName = CleanUpExecutableName(packageName);
             
             foreach (AppModel app in GetInstalled())
             {
-                if (app.ExecutableName.ToLower().Equals(packageName.ToLower()))
+                string tempAppName = CleanUpExecutableName(app.ExecutableName);
+                
+                if (tempAppName.Equals(newPackageName.ToLower()))
                 {
                     foundPackage = true;
                 }
