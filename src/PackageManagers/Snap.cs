@@ -31,6 +31,43 @@ namespace PlatformKit.Software.PackageManagers;
 public static class Snap
 {
     /// <summary>
+    /// Gets the names of updatable Snap packages.
+    /// </summary>
+    /// <returns>the updatable Snap packages as AppModel objects.</returns>
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    public static IEnumerable<AppModel> GetUpdatable()
+    {
+        if (IsSnapSupported() && IsSnapInstalled())
+        {
+            List<AppModel> apps = new List<AppModel>();
+
+            string[] snapUpdates = CommandRunner.RunCommandOnLinux("snap refresh --list").Split(Environment.NewLine);
+
+            if (snapUpdates.Length > 1)
+            {
+                for (int i = 1; i < snapUpdates.Length; i++)
+                {
+                    string[] snapInfos = snapUpdates[i].Split(" ");
+                    string snap = snapInfos[0];
+                
+                    apps.Add(new AppModel(snap,
+                        $"{Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin"));
+                }
+            }
+            else
+            {
+                apps.Clear();
+                return apps.ToArray();
+            }
+
+            return apps.ToArray();
+        }
+
+        throw new PackageManagerNotSupportedException("snap");
+    }
+    
+    /// <summary>
     /// Detect what Snap packages (if any) are installed on a linux distribution or on macOS.
     /// </summary>
     /// <returns>Returns a list of installed snaps. Returns an empty array if no Snaps are installed.</returns>
@@ -43,16 +80,16 @@ public static class Snap
         {
             List<AppModel> apps = new List<AppModel>();
 
-                string[] snapResults = CommandRunner.RunCommandOnLinux(
+            string[] snapResults = CommandRunner.RunCommandOnLinux(
                     $"ls {Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin").Split(' ');
 
-                foreach (string snap in snapResults)
-                {
-                    apps.Add(new AppModel(snap,
-                        $"{Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin"));
-                }
+            foreach (string snap in snapResults)
+            {
+                apps.Add(new AppModel(snap, 
+                    $"{Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin"));
+            }
 
-                return apps.ToArray();
+            return apps.ToArray();
         }
 
         throw new PackageManagerNotSupportedException("snap");
