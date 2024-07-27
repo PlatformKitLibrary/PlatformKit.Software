@@ -33,6 +33,11 @@ namespace PlatformKit.Software.PackageManagers;
 
 public class HomeBrew : AbstractPackageManager
 {
+    public HomeBrew()
+    {
+        PackageManagerName = "HomeBrew";
+    }
+    
     /// <summary>
     /// 
     /// </summary>
