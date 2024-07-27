@@ -67,6 +67,8 @@ public class Apt : AbstractPackageManager
                 return false;
             }
         }
+
+        throw new PackageManagerNotSupportedException(PackageManagerName);
     }
 
     /// <summary>
