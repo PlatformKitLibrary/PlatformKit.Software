@@ -103,10 +103,9 @@ public class HomeBrew : AbstractPackageManager
     {
         if (DoesPackageManagerSupportThisOperatingSystem())
         {
-            List<AppModel> apps = new List<AppModel>();
-
             if (IsPackageManagerInstalled())
             {
+                List<AppModel> apps = new List<AppModel>();
                 string[] casks = CommandRunner.RunCommandOnMac("ls -l bin").Split(Environment.NewLine);
 
                 foreach (string cask in casks)
