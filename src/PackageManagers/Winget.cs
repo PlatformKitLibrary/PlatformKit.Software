@@ -24,9 +24,7 @@
 
 using System.Runtime.Versioning;
 using System.Text;
-
-using AlastairLundy.Extensions.System.VersionExtensions;
-
+using AlastairLundy.Extensions.System;
 using PlatformKit;
 using PlatformKit.Windows;
 

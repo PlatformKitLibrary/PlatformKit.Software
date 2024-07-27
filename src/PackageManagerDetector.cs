@@ -24,6 +24,7 @@
 
 using PlatformKit.Linux;
 using PlatformKit.Linux.Enums;
+using PlatformKit.Linux.Models;
 using PlatformKit.Windows;
 
 using PlatformKit.Software.PackageManagers;
@@ -45,8 +46,8 @@ public class PackageManagerDetector
     {
        if(OperatingSystem.IsLinux())
        {
-            LinuxOsRelease osRelease = LinuxAnalyzer.GetLinuxDistributionInformation();
-            LinuxDistroBase distroBase = LinuxAnalyzer.GetDistroBase(osRelease);
+           LinuxOsReleaseModel osRelease = LinuxOsReleaseRetriever.GetLinuxOsRelease();
+           LinuxDistroBase distroBase = LinuxAnalyzer.GetDistroBase(osRelease);
 
             switch (distroBase)
             {

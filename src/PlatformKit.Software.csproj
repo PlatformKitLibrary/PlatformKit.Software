@@ -25,9 +25,11 @@
 
 ### Full Changelog
 **Full Changelog**: https://github.com/PlatformKitLibrary/PlatformKit.Software/compare/1.0.0-alpha.2...1.0.0-alpha.3</PackageReleaseNotes>
+        <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="AlastairLundy.Extensions.System" Version="5.0.1" />
       <PackageReference Include="PlatformKit" Version="4.*" />
     </ItemGroup>
 
