@@ -3,8 +3,8 @@
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>1.0.0-alpha.3</Version>
-        <PackageVersion>1.0.0-alpha.4</PackageVersion>
+        <Version>1.0.0-alpha.5</Version>
+        <PackageVersion>1.0.0-alpha.5</PackageVersion>
         <Title>PlatformKit.Software</Title>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
@@ -16,19 +16,10 @@
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Description>A C# library to detect installed software and more.</Description>
-        <PackageReleaseNotes>## Changes since 1.0.0 Alpha 3
-
-### Additions
-* Added APT package manager support
-* Added abstract ``AbstractPackageManager`` class
-* Added new ``PackageManagerNotInstalledException`` exception
-* Added new ``PackageManagerNotSupportedException`` exception
-* Added support for getting updatable packages for Snap, Flatpak, APT, and HomeBrew - All package manager support classes now have featury parity
-
-### Changes
-* Changed existing Package manager support classes to now implement ``AbstractPackageManager`` class - They are all no longer static to accomodate this
-* Updated to use PlatformKit 4.3
-* Updated to use SystemExtensions 5 (Previously this library used SystemExtensions 4)</PackageReleaseNotes>
+        <PackageReleaseNotes>### Changes since 1.0.0 Alpha 4
+* Added ``ExtractAppNames`` extension method for IEnumerables of type AppModel
+* Improved reliability of ``InstalledMacApps`` code
+* Improved reliability of ``HomeBrew`` support code</PackageReleaseNotes>
         <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
 
