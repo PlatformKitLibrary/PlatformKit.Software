@@ -22,9 +22,9 @@
     SOFTWARE.
  */
 
-namespace PlatformKit.Software.Extensions;
+namespace PlatformKit.Software.Extensions.AppModelExtensions;
 
-public static class AppModelExtensions
+public static class ExtractPackageNameExtensions
 {
     /// <summary>
     /// 
