@@ -26,7 +26,6 @@ using System.Runtime.Versioning;
 
 using PlatformKit;
 
-
 namespace PlatformKit.Software;
 
 public class InstalledWindowsApps
