@@ -24,14 +24,14 @@
 
 namespace PlatformKit.Software.Extensions.AppModelExtensions;
 
-public static class ExtractPackageNameExtensions
+public static class ExtractAppNameExtensions
 {
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="apps"></param>
+    /// <param name="apps">The packages to have the package names extracted from.</param>
     /// <returns></returns>
-    public static IEnumerable<string> ExtractPackageNames(this IEnumerable<AppModel> apps)
+    public static IEnumerable<string> ExtractAppNames(this IEnumerable<AppModel> apps)
     {
         AppModel[] enumerable = apps as AppModel[] ?? apps.ToArray();
         
