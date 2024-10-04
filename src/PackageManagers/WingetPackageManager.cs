@@ -27,7 +27,7 @@ using System.Text;
 using AlastairLundy.Extensions.System;
 using PlatformKit;
 using PlatformKit.Software.Abstractions;
-using PlatformKit.Software.Exceptions;
+using PlatformKit.Software.Internal.Exceptions;
 using PlatformKit.Windows;
 
 namespace PlatformKit.Software.PackageManagers;
