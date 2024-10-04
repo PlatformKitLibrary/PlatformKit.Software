@@ -47,7 +47,7 @@ public class PackageManagerDetector
        if(OperatingSystem.IsLinux())
        {
            LinuxOsReleaseModel osRelease = LinuxOsReleaseRetriever.GetLinuxOsRelease();
-           LinuxDistroBase distroBase = LinuxAnalyzer.GetDistroBase(osRelease);
+           LinuxDistroBase distroBase = LinuxOsReleaseRetriever.GetDistroBase(osRelease);
 
             switch (distroBase)
             {
