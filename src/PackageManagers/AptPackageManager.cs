@@ -23,15 +23,17 @@
  */
 
 using System.Runtime.Versioning;
+
 using PlatformKit.Linux;
+
 using PlatformKit.Software.Abstractions;
 using PlatformKit.Software.Exceptions;
 
 namespace PlatformKit.Software.PackageManagers;
 
-public class Apt : AbstractPackageManager
+public class AptPackageManager : AbstractPackageManager
 {
-    public Apt()
+    public AptPackageManager()
     {
         PackageManagerName = "apt";
     }

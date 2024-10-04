@@ -1,5 +1,5 @@
 ﻿/*
-       MIT License
+      MIT License
 
     Copyright (c) 2024 Alastair Lundy
 
@@ -19,26 +19,27 @@
     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
+    SOFTWARE. 
  */
 
 using System.Runtime.Versioning;
 
-using PlatformKit;
 using PlatformKit.Software.Abstractions;
 using PlatformKit.Software.Exceptions;
 
 namespace PlatformKit.Software.PackageManagers;
 
-
-// ReSharper disable once ClassNeverInstantiated.Global
-public class Flatpak : AbstractPackageManager
+public class SnapPackageManager : AbstractPackageManager
 {
-    public Flatpak()
+    public SnapPackageManager()
     {
-        PackageManagerName = "Flatpak";
+        PackageManagerName = "Snap";
     }
     
+    /// <summary>
+    /// Gets the names of updatable Snap packages.
+    /// </summary>
+    /// <returns>the updatable Snap packages as AppModel objects.</returns>
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     public override IEnumerable<AppModel> GetUpdatable()
@@ -51,29 +52,24 @@ public class Flatpak : AbstractPackageManager
             }
             
             List<AppModel> apps = new List<AppModel>();
-            
-            string[] flatpakResults = CommandRunner.RunCommandOnLinux("flatpak update -n")
-                .Split(Environment.NewLine);
 
-            string installLocation = CommandRunner.RunCommandOnLinux("flatpak --installations");
+            string[] snapUpdates = CommandRunner.RunCommandOnLinux("snap refresh --list").Split(Environment.NewLine);
 
-            if (flatpakResults.Length > 1)
+            if (snapUpdates.Length > 1)
             {
-                for (int index = 1; index < flatpakResults.Length; index++)
+                for (int i = 1; i < snapUpdates.Length; i++)
                 {
-                    string flatpakResult = flatpakResults[index];
-
-                    if (!flatpakResult.Equals(string.Empty) && flatpakResult.Contains('.') && !flatpakResult.Contains("ID"))
-                    {
-                        string result = flatpakResult.Split(" ")[1];
-                    
-                        apps.Add(new AppModel(result, installLocation));
-                    }
+                    string[] snapInfos = snapUpdates[i].Split(" ");
+                    string snap = snapInfos[0];
+                
+                    apps.Add(new AppModel(snap,
+                        $"{Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin"));
                 }
             }
             else
             {
                 apps.Clear();
+                return apps.ToArray();
             }
 
             return apps.ToArray();
@@ -81,12 +77,12 @@ public class Flatpak : AbstractPackageManager
 
         throw new PackageManagerNotSupportedException(PackageManagerName);
     }
-
+    
     /// <summary>
-    /// Platforms Supported On: Linux and FreeBsd.
+    /// Detect what Snap packages (if any) are installed on a linux distribution or on macOS.
     /// </summary>
-    /// <returns></returns>
-    /// <exception cref="PlatformNotSupportedException"></exception>
+    /// <returns>Returns a list of installed snaps. Returns an empty array if no Snaps are installed.</returns>
+    /// <exception cref="PlatformNotSupportedException">Throws an exception if run on a Platform other than Linux, macOS, and FreeBsd.</exception>
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     public override IEnumerable<AppModel> GetInstalled()
@@ -99,61 +95,41 @@ public class Flatpak : AbstractPackageManager
             }
             
             List<AppModel> apps = new List<AppModel>();
-            
-                string[] flatpakResults = CommandRunner.RunCommandOnLinux("flatpak list --columns=name")
-                .Split(Environment.NewLine);
 
-                string installLocation = CommandRunner.RunCommandOnLinux("flatpak --installations");
+            string[] snapResults = CommandRunner.RunCommandOnLinux(
+                    $"ls {Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin").Split(' ');
 
-                foreach (string flatpak in flatpakResults)
-                {
-                    apps.Add(new AppModel(flatpak, installLocation));
-                }
+            foreach (string snap in snapResults)
+            {
+                apps.Add(new AppModel(snap, 
+                    $"{Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin"));
+            }
 
-                return apps.ToArray();
+            return apps.ToArray();
         }
 
         throw new PackageManagerNotSupportedException(PackageManagerName);
     }
 
+    public override bool DoesPackageManagerSupportThisOperatingSystem()
+    {
+        return OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD();
+    }
+
     /// <summary>
-    /// Determines whether the Flatpak package manager is installed or not.
+    /// Detect if the Snap package manager is installed.
     /// </summary>
     /// <returns></returns>
+    /// <exception cref="PlatformNotSupportedException"></exception>
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     public override bool IsPackageManagerInstalled()
     {
         if (DoesPackageManagerSupportThisOperatingSystem())
         {
-            try
-            {
-                string[] flatpakTest = CommandRunner.RunCommandOnLinux("flatpak --version").Split(' ');
-                
-                if (flatpakTest[0].Contains("Flatpak"))
-                {
-                    Version.Parse(flatpakTest[1]);
-
-                    return true;
-                }
-            }
-            catch
-            {
-                return false;
-            }
-
-            return false;
+            return Directory.Exists($"{Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin");
         }
 
-        throw new PackageManagerNotSupportedException(PackageManagerName);
-    }
-    
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    public override bool DoesPackageManagerSupportThisOperatingSystem()
-    {
-        return OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD();
+        throw new PackageManagerNotInstalledException(PackageManagerName);
     }
 }

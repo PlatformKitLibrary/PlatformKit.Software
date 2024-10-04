@@ -31,9 +31,9 @@ using PlatformKit.Software.Exceptions;
 
 namespace PlatformKit.Software.PackageManagers;
 
-public class HomeBrew : AbstractPackageManager
+public class HomeBrewPackageManager : AbstractPackageManager
 {
-    public HomeBrew()
+    public HomeBrewPackageManager()
     {
         PackageManagerName = "HomeBrew";
     }

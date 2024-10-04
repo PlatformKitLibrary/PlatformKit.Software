@@ -32,9 +32,9 @@ using PlatformKit.Windows;
 
 namespace PlatformKit.Software.PackageManagers;
 
-public class Winget : AbstractPackageManager
+public class WingetPackageManager : AbstractPackageManager
 {
-    public Winget()
+    public WingetPackageManager()
     {
         PackageManagerName = "Winget";
     }
@@ -50,7 +50,7 @@ public class Winget : AbstractPackageManager
     {
         if (DoesPackageManagerSupportThisOperatingSystem())
         {
-            if (!IsPackageManagerInstalled())
+            if (IsPackageManagerInstalled() == false)
             {
                 throw new PackageManagerNotInstalledException(PackageManagerName);
             }

@@ -30,9 +30,9 @@ using PlatformKit.Software.Exceptions;
 
 namespace PlatformKit.Software.PackageManagers;
 
-public class Chocolatey : AbstractPackageManager
+public class ChocolateyPackageManager : AbstractPackageManager
 {
-    public Chocolatey()
+    public ChocolateyPackageManager()
     {
         PackageManagerName = "Chocolatey";
     }
