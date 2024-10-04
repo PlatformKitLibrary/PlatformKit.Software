@@ -69,9 +69,9 @@ public class PackageManagerDetector
                 case LinuxDistroBase.Fedora or LinuxDistroBase.RHEL:
                     return PackageManager.DNF;
                 default:
-                    Snap snap = new Snap();
-                    HomeBrew homeBrew = new HomeBrew();
-                    Flatpak flatpak = new Flatpak();
+                    SnapPackageManager snap = new SnapPackageManager();
+                    HomeBrewPackageManager homeBrew = new HomeBrewPackageManager();
+                    FlatpakPackageManager flatpak = new FlatpakPackageManager();
                     
                     if(flatpak.IsPackageManagerInstalled())
                     {
@@ -93,7 +93,7 @@ public class PackageManagerDetector
        }
        if(OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst())
        {
-           HomeBrew homeBrew = new HomeBrew();
+           HomeBrewPackageManager homeBrew = new HomeBrewPackageManager();
            
             if(homeBrew.IsPackageManagerInstalled()) 
             {
@@ -112,7 +112,7 @@ public class PackageManagerDetector
                 return PackageManager.Winget;
             }
 
-            Chocolatey chocolatey = new Chocolatey();
+            ChocolateyPackageManager chocolatey = new ChocolateyPackageManager();
             
             if (chocolatey.DoesPackageManagerSupportThisOperatingSystem())
             {

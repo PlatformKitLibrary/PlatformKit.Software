@@ -49,7 +49,7 @@ public class InstalledLinuxApps
 
             if (includeBrewCasks)
             {
-                HomeBrew homeBrew = new HomeBrew();
+                HomeBrewPackageManager homeBrew = new HomeBrewPackageManager();
                 
                 foreach (AppModel app in homeBrew.GetInstalled())
                 {

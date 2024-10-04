@@ -63,7 +63,7 @@ public class InstalledMacApps
                 apps.Add(new AppModel(app, applicationsFolder));
             }
 
-            HomeBrew homeBrew = new HomeBrew();
+            HomeBrewPackageManager homeBrew = new HomeBrewPackageManager();
             
             if (homeBrew.IsPackageManagerInstalled())
             {
