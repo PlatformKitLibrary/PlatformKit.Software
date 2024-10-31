@@ -22,6 +22,8 @@
     SOFTWARE.
  */
 
+using System;
+using System.Collections.Generic;
 using System.Runtime.Versioning;
 using System.Text;
 using AlastairLundy.Extensions.System;

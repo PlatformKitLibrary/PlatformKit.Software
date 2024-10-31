@@ -23,6 +23,8 @@
  */
 
 
+using System;
+
 namespace PlatformKit.Software
 {
     public class AppModel

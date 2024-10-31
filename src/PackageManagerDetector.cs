@@ -22,6 +22,7 @@
     SOFTWARE.
  */
 
+using System;
 using PlatformKit.Linux;
 using PlatformKit.Linux.Enums;
 using PlatformKit.Linux.Models;

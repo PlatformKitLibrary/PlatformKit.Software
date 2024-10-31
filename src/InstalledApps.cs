@@ -26,6 +26,8 @@ SOFTWARE.
 using System.Runtime.Versioning;
 #endif
 
+using System;
+using System.Collections.Generic;
 using PlatformKit;
 
 #if NETSTANDARD2_0 || NETSTANDARD2_1

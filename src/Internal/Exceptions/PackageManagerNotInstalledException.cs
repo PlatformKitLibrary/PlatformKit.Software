@@ -22,6 +22,8 @@
     SOFTWARE. 
  */
 
+using System;
+
 using PlatformKit.Software.Internal.Localizations;
 
 namespace PlatformKit.Software.Internal.Exceptions

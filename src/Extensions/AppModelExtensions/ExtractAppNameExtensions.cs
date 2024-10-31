@@ -22,6 +22,9 @@
     SOFTWARE.
  */
 
+using System.Collections.Generic;
+using System.Linq;
+
 namespace PlatformKit.Software.Extensions.AppModelExtensions
 {
     public static class ExtractAppNameExtensions

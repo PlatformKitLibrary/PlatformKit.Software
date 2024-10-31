@@ -22,6 +22,9 @@
     SOFTWARE.
  */
 
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Runtime.Versioning;
 
 using PlatformKit.Linux;
