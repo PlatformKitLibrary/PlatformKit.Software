@@ -22,91 +22,104 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
+#if NET5_0_OR_GREATER
 using System.Runtime.Versioning;
+#endif
 
 using PlatformKit;
 
-namespace PlatformKit.Software;
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+using OperatingSystem = PlatformKit.Extensions.OperatingSystem.OperatingSystemExtension;
+#endif
 
-public class InstalledApps
+namespace PlatformKit.Software
 {
-
-    /// <summary>
-    /// Determine whether an app is installed or not.
-    /// </summary>
-    /// <param name="appName"></param>
-    /// <returns></returns>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("macos")]
-    public static bool IsInstalled(string appName)
+    public class InstalledApps
     {
-        foreach (AppModel app in Get())
+
+        /// <summary>
+        /// Determine whether an app is installed or not.
+        /// </summary>
+        /// <param name="appName"></param>
+        /// <returns></returns>
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("macos")]
+#endif
+        public static bool IsInstalled(string appName)
         {
-            if (app.ExecutableName.Equals(appName))
+            foreach (AppModel app in Get())
             {
-                return true;
+                if (app.ExecutableName.Equals(appName))
+                {
+                    return true;
+                }
             }
+
+            return false;
         }
 
-        return false;
-    }
+        /// <summary>
+        /// Gets a collection of apps and programs installed on this device.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="PlatformNotSupportedException"></exception>
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("macos")]
+#endif
+        public static IEnumerable<AppModel> Get()
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                return InstalledWindowsApps.GetInstalled(true);
+            }
+            else if (OperatingSystem.IsMacOS())
+            {
+                return InstalledMacApps.GetInstalled();
+            }
+            else if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
+            {
+                return InstalledLinuxApps.GetInstalled(true);
+            }
 
-    /// <summary>
-    /// Gets a collection of apps and programs installed on this device.
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="PlatformNotSupportedException"></exception>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("macos")]
-    public static IEnumerable<AppModel> Get()
-    {
-        if (OperatingSystem.IsWindows())
-        {
-            return InstalledWindowsApps.GetInstalled(true);
-        }
-        else if (OperatingSystem.IsMacOS())
-        {
-            return InstalledMacApps.GetInstalled();
-        }
-        else if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
-        {
-            return InstalledLinuxApps.GetInstalled(true);
-        }
-
-        throw new PlatformNotSupportedException();
-    }
-
-    /// <summary>
-    /// Opens the specified app or program.
-    /// </summary>
-    /// <param name="appModel"></param>
-    /// <exception cref="PlatformNotSupportedException"></exception>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("macos")]
-    public static void Open(AppModel appModel)
-    {
-        if (OperatingSystem.IsWindows())
-        {
-            ProcessRunner.RunProcessOnWindows(appModel.InstallLocation, appModel.ExecutableName);
-        }
-        else if (OperatingSystem.IsMacOS())
-        {
-            ProcessRunner.RunProcessOnMac(appModel.InstallLocation, appModel.ExecutableName);
-        }
-        else if (OperatingSystem.IsLinux())
-        {
-            ProcessRunner.RunProcessOnLinux(appModel.InstallLocation, appModel.ExecutableName);
-        }
-        else if (OperatingSystem.IsFreeBSD())
-        {
-            ProcessRunner.RunProcessOnFreeBsd(appModel.InstallLocation, appModel.ExecutableName);
-        }
-        else
-        {
             throw new PlatformNotSupportedException();
+        }
+
+        /// <summary>
+        /// Opens the specified app or program.
+        /// </summary>
+        /// <param name="appModel"></param>
+        /// <exception cref="PlatformNotSupportedException"></exception>
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("macos")]
+#endif
+        public static void Open(AppModel appModel)
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                ProcessRunner.RunProcessOnWindows(appModel.InstallLocation, appModel.ExecutableName);
+            }
+            else if (OperatingSystem.IsMacOS())
+            {
+                ProcessRunner.RunProcessOnMac(appModel.InstallLocation, appModel.ExecutableName);
+            }
+            else if (OperatingSystem.IsLinux())
+            {
+                ProcessRunner.RunProcessOnLinux(appModel.InstallLocation, appModel.ExecutableName);
+            }
+            else if (OperatingSystem.IsFreeBSD())
+            {
+                ProcessRunner.RunProcessOnFreeBsd(appModel.InstallLocation, appModel.ExecutableName);
+            }
+            else
+            {
+                throw new PlatformNotSupportedException();
+            }
         }
     }
 }

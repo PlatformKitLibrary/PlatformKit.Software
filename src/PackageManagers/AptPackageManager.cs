@@ -29,126 +29,139 @@ using PlatformKit.Linux;
 using PlatformKit.Software.Abstractions;
 using PlatformKit.Software.Internal.Exceptions;
 
-namespace PlatformKit.Software.PackageManagers;
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+using OperatingSystem = PlatformKit.Extensions.OperatingSystem.OperatingSystemExtension;
+#endif
 
-public class AptPackageManager : AbstractPackageManager
+namespace PlatformKit.Software.PackageManagers
 {
-    public AptPackageManager()
+    public class AptPackageManager : AbstractPackageManager
     {
-        PackageManagerName = "apt";
-    }
-    
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    [SupportedOSPlatform("linux")]
-    public override bool DoesPackageManagerSupportThisOperatingSystem()
-    {
-        return OperatingSystem.IsLinux() && (LinuxOsReleaseRetriever.GetLinuxOsRelease().Identifier_Like.ToLower().Contains("debian") || 
-         LinuxOsReleaseRetriever.GetLinuxOsRelease().Identifier_Like.ToLower().Contains("ubuntu"));
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    [SupportedOSPlatform("linux")]
-    public override bool IsPackageManagerInstalled()
-    {
-        if (DoesPackageManagerSupportThisOperatingSystem())
+        public AptPackageManager()
         {
-            try
-            {
-                string[] infos = CommandRunner.RunCommandOnLinux("apt -v").Split(" ");
-
-                return infos[0].Equals("apt");
-            }
-            catch
-            {
-                return false;
-            }
+            PackageManagerName = "apt";
+        }
+    
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("linux")]
+#endif
+        public override bool DoesPackageManagerSupportThisOperatingSystem()
+        {
+            return OperatingSystem.IsLinux() && (LinuxOsReleaseRetriever.GetLinuxOsRelease().Identifier_Like.ToLower().Contains("debian") || 
+                                                 LinuxOsReleaseRetriever.GetLinuxOsRelease().Identifier_Like.ToLower().Contains("ubuntu"));
         }
 
-        throw new PackageManagerNotSupportedException(PackageManagerName);
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="PackageManagerNotInstalledException"></exception>
-    /// <exception cref="PackageManagerNotSupportedException"></exception>
-    [SupportedOSPlatform("linux")]
-    public override IEnumerable<AppModel> GetUpdatable()
-    {
-        if (DoesPackageManagerSupportThisOperatingSystem())
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("linux")]
+#endif
+        public override bool IsPackageManagerInstalled()
         {
-            if (!IsPackageManagerInstalled())
+            if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                throw new PackageManagerNotInstalledException(PackageManagerName);
-            }
-
-            CommandRunner.RunCommandOnLinux("apt update", true);
-
-            List<AppModel> apps = new List<AppModel>();
-
-            string[] updatableApps = CommandRunner.RunCommandOnLinux("apt list --upgradable").Split(Environment.NewLine);
-
-            if (updatableApps.Length > 1)
-            {
-                for (int index = 1; index < updatableApps.Length; index++)
+                try
                 {
-                    string[] updatableAppInfos = updatableApps[index].Split("/");
-                    string updatableApp = updatableAppInfos[0];
-                
-                    apps.Add(new AppModel(updatableApp,
-                        $"{Path.DirectorySeparatorChar}usr{Path.DirectorySeparatorChar}bin"));
+                    string[] infos = CommandRunner.RunCommandOnLinux("apt -v").Split(" ");
+
+                    return infos[0].Equals("apt");
+                }
+                catch
+                {
+                    return false;
                 }
             }
-            else
-            {
-                apps.Clear();
-            }
 
-            return apps.ToArray();
+            throw new PackageManagerNotSupportedException(PackageManagerName);
         }
 
-        throw new PackageManagerNotSupportedException(PackageManagerName);
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="PackageManagerNotInstalledException"></exception>
-    /// <exception cref="PackageManagerNotSupportedException"></exception>
-    [SupportedOSPlatform("linux")]
-    public override IEnumerable<AppModel> GetInstalled()
-    {
-        if (DoesPackageManagerSupportThisOperatingSystem())
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="PackageManagerNotInstalledException"></exception>
+        /// <exception cref="PackageManagerNotSupportedException"></exception>
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("linux")]
+#endif
+        public override IEnumerable<AppModel> GetUpdatable()
         {
-            if (!IsPackageManagerInstalled())
+            if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                throw new PackageManagerNotInstalledException(PackageManagerName);
-            }
+                if (!IsPackageManagerInstalled())
+                {
+                    throw new PackageManagerNotInstalledException(PackageManagerName);
+                }
 
-            List<AppModel> apps = new List<AppModel>();
+                CommandRunner.RunCommandOnLinux("apt update", true);
 
-            string[] installedApps = CommandRunner.RunCommandOnLinux("apt list").Split(Environment.NewLine);
+                List<AppModel> apps = new List<AppModel>();
 
-            for (int index = 1; index < installedApps.Length; index++)
-            {
-                string[] appInfos = installedApps[index].Split("/");
-                string appName = appInfos[0];
+                string[] updatableApps = CommandRunner.RunCommandOnLinux("apt list --upgradable").Split(Environment.NewLine);
+
+                if (updatableApps.Length > 1)
+                {
+                    for (int index = 1; index < updatableApps.Length; index++)
+                    {
+                        string[] updatableAppInfos = updatableApps[index].Split("/");
+                        string updatableApp = updatableAppInfos[0];
                 
-                apps.Add(new AppModel(appName,
-                    $"{Path.DirectorySeparatorChar}usr{Path.DirectorySeparatorChar}bin"));
+                        apps.Add(new AppModel(updatableApp,
+                            $"{Path.DirectorySeparatorChar}usr{Path.DirectorySeparatorChar}bin"));
+                    }
+                }
+                else
+                {
+                    apps.Clear();
+                }
+
+                return apps.ToArray();
             }
 
-            return apps.ToArray();
+            throw new PackageManagerNotSupportedException(PackageManagerName);
         }
 
-        throw new PackageManagerNotSupportedException(PackageManagerName);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="PackageManagerNotInstalledException"></exception>
+        /// <exception cref="PackageManagerNotSupportedException"></exception>
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("linux")]
+#endif
+        public override IEnumerable<AppModel> GetInstalled()
+        {
+            if (DoesPackageManagerSupportThisOperatingSystem())
+            {
+                if (!IsPackageManagerInstalled())
+                {
+                    throw new PackageManagerNotInstalledException(PackageManagerName);
+                }
+
+                List<AppModel> apps = new List<AppModel>();
+
+                string[] installedApps = CommandRunner.RunCommandOnLinux("apt list").Split(Environment.NewLine);
+
+                for (int index = 1; index < installedApps.Length; index++)
+                {
+                    string[] appInfos = installedApps[index].Split("/");
+                    string appName = appInfos[0];
+                
+                    apps.Add(new AppModel(appName,
+                        $"{Path.DirectorySeparatorChar}usr{Path.DirectorySeparatorChar}bin"));
+                }
+
+                return apps.ToArray();
+            }
+
+            throw new PackageManagerNotSupportedException(PackageManagerName);
+        }
     }
 }

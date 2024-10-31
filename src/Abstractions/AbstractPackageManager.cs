@@ -24,76 +24,77 @@
 
 using PlatformKit.Software.Internal.Exceptions;
 
-namespace PlatformKit.Software.Abstractions;
-
-public abstract class AbstractPackageManager
+namespace PlatformKit.Software.Abstractions
 {
-    public string PackageManagerName { get; protected set; }
-    
-    public abstract bool DoesPackageManagerSupportThisOperatingSystem();
-
-    public abstract bool IsPackageManagerInstalled();
-
-    public abstract IEnumerable<AppModel> GetUpdatable();
-    public abstract IEnumerable<AppModel> GetInstalled();
-
-    private string CleanUpExecutableName(string executableName)
+    public abstract class AbstractPackageManager
     {
-        string newName = executableName;
+        public string PackageManagerName { get; protected set; }
+    
+        public abstract bool DoesPackageManagerSupportThisOperatingSystem();
+
+        public abstract bool IsPackageManagerInstalled();
+
+        public abstract IEnumerable<AppModel> GetUpdatable();
+        public abstract IEnumerable<AppModel> GetInstalled();
+
+        private string CleanUpExecutableName(string executableName)
+        {
+            string newName = executableName;
         
-        if (newName.EndsWith(".exe"))
-        {
-            newName = newName.Replace(".exe", string.Empty);
-        }
-        if (newName.EndsWith(".msi"))
-        {
-            newName = newName.Replace(".msi", string.Empty);
-        }
-        if (newName.EndsWith(".appx"))
-        {
-            newName = newName.Replace(".appx", string.Empty);
-        }
-        if (newName.EndsWith(".app"))
-        {
-            newName = newName.Replace(".app", string.Empty);
-        }
+            if (newName.EndsWith(".exe"))
+            {
+                newName = newName.Replace(".exe", string.Empty);
+            }
+            if (newName.EndsWith(".msi"))
+            {
+                newName = newName.Replace(".msi", string.Empty);
+            }
+            if (newName.EndsWith(".appx"))
+            {
+                newName = newName.Replace(".appx", string.Empty);
+            }
+            if (newName.EndsWith(".app"))
+            {
+                newName = newName.Replace(".app", string.Empty);
+            }
 
-        return newName;
-    }
+            return newName;
+        }
     
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="packageName"></param>
-    /// <returns></returns>
-    /// <exception cref="PackageManagerNotInstalledException"></exception>
-    /// <exception cref="PackageManagerNotSupportedException"></exception>
-    public bool IsPackageInstalled(string packageName)
-    {
-        if (DoesPackageManagerSupportThisOperatingSystem())
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="packageName"></param>
+        /// <returns></returns>
+        /// <exception cref="PackageManagerNotInstalledException"></exception>
+        /// <exception cref="PackageManagerNotSupportedException"></exception>
+        public bool IsPackageInstalled(string packageName)
         {
-            if (!IsPackageManagerInstalled())
+            if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                throw new PackageManagerNotInstalledException(PackageManagerName);
-            }
-
-            bool foundPackage = false;
-
-            string newPackageName = CleanUpExecutableName(packageName);
-            
-            foreach (AppModel app in GetInstalled())
-            {
-                string tempAppName = CleanUpExecutableName(app.ExecutableName);
-                
-                if (tempAppName.Equals(newPackageName.ToLower()))
+                if (!IsPackageManagerInstalled())
                 {
-                    foundPackage = true;
+                    throw new PackageManagerNotInstalledException(PackageManagerName);
                 }
+
+                bool foundPackage = false;
+
+                string newPackageName = CleanUpExecutableName(packageName);
+            
+                foreach (AppModel app in GetInstalled())
+                {
+                    string tempAppName = CleanUpExecutableName(app.ExecutableName);
+                
+                    if (tempAppName.Equals(newPackageName.ToLower()))
+                    {
+                        foundPackage = true;
+                    }
+                }
+
+                return foundPackage;
             }
 
-            return foundPackage;
+            throw new PackageManagerNotSupportedException(PackageManagerName);
         }
-
-        throw new PackageManagerNotSupportedException(PackageManagerName);
     }
 }

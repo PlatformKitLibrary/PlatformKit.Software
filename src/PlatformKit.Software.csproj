@@ -20,9 +20,17 @@
 * Added ``ExtractAppNames`` extension method for IEnumerables of type AppModel
 * Improved reliability of ``InstalledMacApps`` code
 * Improved reliability of ``HomeBrew`` support code</PackageReleaseNotes>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFrameworks>net8.0;netstandard2.1</TargetFrameworks>
     </PropertyGroup>
 
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+        <PackageReference Include="PlatformKit.Extensions.OperatingSystem" Version="[1.5.1, 2.0.0)" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+        <PackageReference Include="PlatformKit.Extensions.OperatingSystem" Version="[1.5.1, 2.0.0)" />
+    </ItemGroup>
+    
     <ItemGroup>
       <PackageReference Include="AlastairLundy.Extensions.System" Version="5.*" />
       <PackageReference Include="PlatformKit" Version="4.*" />

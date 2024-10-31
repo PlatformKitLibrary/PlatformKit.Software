@@ -30,101 +30,110 @@ using PlatformKit.Windows;
 using PlatformKit.Software.PackageManagers;
 using PlatformKit.Software.Enums;
 
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+using OperatingSystem = PlatformKit.Extensions.OperatingSystem.OperatingSystemExtension;
+#endif
+
 // ReSharper disable RedundantIfElseBlock
 
-namespace PlatformKit.Software;
-
-public class PackageManagerDetector
+namespace PlatformKit.Software
 {
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="PlatformNotSupportedException"></exception>
-    public static PackageManager GetDefaultForPlatform()
+    public class PackageManagerDetector
     {
-       if(OperatingSystem.IsLinux())
-       {
-           LinuxOsReleaseModel osRelease = LinuxOsReleaseRetriever.GetLinuxOsRelease();
-           LinuxDistroBase distroBase = LinuxOsReleaseRetriever.GetDistroBase(osRelease);
 
-            switch (distroBase)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="PlatformNotSupportedException"></exception>
+        public static PackageManager GetDefaultForPlatform()
+        {
+            if(OperatingSystem.IsLinux())
             {
-                case LinuxDistroBase.Arch or LinuxDistroBase.Manjaro:
-                    return PackageManager.Pacman;
-                case LinuxDistroBase.Debian:
-                    return PackageManager.APT;
-                case LinuxDistroBase.Ubuntu:
-                    string osName = osRelease.PrettyName.ToLower();
+                LinuxOsReleaseModel osRelease = LinuxOsReleaseRetriever.GetLinuxOsRelease();
+                LinuxDistroBase distroBase = LinuxOsReleaseRetriever.GetDistroBase(osRelease);
 
-                    if (osName.Contains("buntu"))
-                    {
-                        return PackageManager.Snap;
-                    }
-                    else
-                    {
-                        return PackageManager.APT;
-                    }
-                case LinuxDistroBase.Fedora or LinuxDistroBase.RHEL:
-                    return PackageManager.DNF;
-                default:
-                    SnapPackageManager snap = new SnapPackageManager();
-                    HomeBrewPackageManager homeBrew = new HomeBrewPackageManager();
-                    FlatpakPackageManager flatpak = new FlatpakPackageManager();
-                    
-                    if(flatpak.IsPackageManagerInstalled())
-                    {
-                        return PackageManager.Flatpak;
-                    }
-
-                    if(snap.IsPackageManagerInstalled())
-                    {
-                        return PackageManager.Snap;
-                    }
-                    if(homeBrew.IsPackageManagerInstalled())
-                    {
-                        return PackageManager.Homebrew;
-                    }
-
-                    return PackageManager.NotDetected;
-            }
-
-       }
-       if(OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst())
-       {
-           HomeBrewPackageManager homeBrew = new HomeBrewPackageManager();
-           
-            if(homeBrew.IsPackageManagerInstalled()) 
-            {
-                return PackageManager.Homebrew;
-            }
-
-            // TODO: Add Mac Ports support here
-
-
-            return PackageManager.NotSupported;
-       }
-       if (OperatingSystem.IsWindows())
-       {
-            if (WindowsAnalyzer.IsAtLeastVersion(WindowsVersion.Win10_v1809) && WindowsAnalyzer.GetWindowsEdition() != WindowsEdition.Server)
-            {
-                return PackageManager.Winget;
-            }
-
-            ChocolateyPackageManager chocolatey = new ChocolateyPackageManager();
-            
-            if (chocolatey.DoesPackageManagerSupportThisOperatingSystem())
-            {
-                if (chocolatey.IsPackageManagerInstalled())
+                switch (distroBase)
                 {
-                    return PackageManager.Chocolatey;
+                    case LinuxDistroBase.Arch:
+                        return PackageManager.Pacman;
+                    case LinuxDistroBase.Manjaro:
+                        return PackageManager.Pacman;
+                    case LinuxDistroBase.Debian:
+                        return PackageManager.APT;
+                    case LinuxDistroBase.Ubuntu:
+                        string osName = osRelease.PrettyName.ToLower();
+
+                        if (osName.Contains("buntu"))
+                        {
+                            return PackageManager.Snap;
+                        }
+                        else
+                        {
+                            return PackageManager.APT;
+                        }
+                    case LinuxDistroBase.Fedora:
+                        return PackageManager.Snap;
+                    case LinuxDistroBase.RHEL:
+                        return PackageManager.DNF;
+                    default:
+                        SnapPackageManager snap = new SnapPackageManager();
+                        HomeBrewPackageManager homeBrew = new HomeBrewPackageManager();
+                        FlatpakPackageManager flatpak = new FlatpakPackageManager();
+                    
+                        if(flatpak.IsPackageManagerInstalled())
+                        {
+                            return PackageManager.Flatpak;
+                        }
+
+                        if(snap.IsPackageManagerInstalled())
+                        {
+                            return PackageManager.Snap;
+                        }
+                        if(homeBrew.IsPackageManagerInstalled())
+                        {
+                            return PackageManager.Homebrew;
+                        }
+
+                        return PackageManager.NotDetected;
                 }
+
+            }
+            if(OperatingSystem.IsMacOS())
+            {
+                HomeBrewPackageManager homeBrew = new HomeBrewPackageManager();
+           
+                if(homeBrew.IsPackageManagerInstalled()) 
+                {
+                    return PackageManager.Homebrew;
+                }
+
+                // TODO: Add Mac Ports support here
+
+
+                return PackageManager.NotSupported;
+            }
+            if (OperatingSystem.IsWindows())
+            {
+                if (WindowsAnalyzer.IsAtLeastVersion(WindowsVersion.Win10_v1809) && WindowsAnalyzer.GetWindowsEdition() != WindowsEdition.Server)
+                {
+                    return PackageManager.Winget;
+                }
+
+                ChocolateyPackageManager chocolatey = new ChocolateyPackageManager();
+            
+                if (chocolatey.DoesPackageManagerSupportThisOperatingSystem())
+                {
+                    if (chocolatey.IsPackageManagerInstalled())
+                    {
+                        return PackageManager.Chocolatey;
+                    }
+                }
+
+                return PackageManager.NotSupported;
             }
 
-            return PackageManager.NotSupported;
-       }
-
-       throw new PlatformNotSupportedException();
+            throw new PlatformNotSupportedException();
+        }
     }
 }

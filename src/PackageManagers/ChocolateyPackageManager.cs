@@ -28,118 +28,127 @@ using PlatformKit;
 using PlatformKit.Software.Abstractions;
 using PlatformKit.Software.Internal.Exceptions;
 
-namespace PlatformKit.Software.PackageManagers;
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+using OperatingSystem = PlatformKit.Extensions.OperatingSystem.OperatingSystemExtension;
+#endif
 
-public class ChocolateyPackageManager : AbstractPackageManager
+namespace PlatformKit.Software.PackageManagers
 {
-    public ChocolateyPackageManager()
+    public class ChocolateyPackageManager : AbstractPackageManager
     {
-        PackageManagerName = "Chocolatey";
-    }
-    
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="PackageManagerNotInstalledException"></exception>
-    /// <exception cref="PackageManagerNotSupportedException"></exception>
-    [SupportedOSPlatform("windows")]
-    public override IEnumerable<AppModel> GetUpdatable()
-    {
-        if (DoesPackageManagerSupportThisOperatingSystem())
+        public ChocolateyPackageManager()
         {
-            if (!IsPackageManagerInstalled())
-            {
-                throw new PackageManagerNotInstalledException(PackageManagerName);
-            }
-            
-            List<AppModel> apps = new List<AppModel>();
-            
-            string[] chocoResults = CommandRunner.RunCmdCommand("choco outdated -l -r --id-only").Split(Environment.NewLine);
-
-            string chocolateyLocation = CommandRunner.RunPowerShellCommand("$env:ChocolateyInstall");
-            
-            foreach (string package in chocoResults)
-            {
-                apps.Add(new AppModel(package, chocolateyLocation));
-            }
-
-            return apps.ToArray();
+            PackageManagerName = "Chocolatey";
         }
-
-        throw new PackageManagerNotSupportedException(PackageManagerName);
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="PlatformNotSupportedException"></exception>
-    [SupportedOSPlatform("windows")]
-    public override IEnumerable<AppModel> GetInstalled()
-    {
-        if (DoesPackageManagerSupportThisOperatingSystem())
-        {
-            if (!IsPackageManagerInstalled())
-            {
-                throw new PackageManagerNotInstalledException(PackageManagerName);
-            }
-            
-            List<AppModel> apps = new List<AppModel>();
-            
-            string[] chocoResults = CommandRunner.RunCmdCommand("choco list -l -r --id-only").Split(Environment.NewLine);
-
-            string chocolateyLocation = CommandRunner.RunPowerShellCommand("$env:ChocolateyInstall");
-            
-            foreach (string package in chocoResults)
-            {
-                apps.Add(new AppModel(package, chocolateyLocation));
-            }
-
-            return apps.ToArray();
-        }
-
-        throw new PackageManagerNotSupportedException(PackageManagerName);
-    }
     
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="PlatformNotSupportedException"></exception>
-    public override bool IsPackageManagerInstalled()
-    {
-        if (OperatingSystem.IsWindows())
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="PackageManagerNotInstalledException"></exception>
+        /// <exception cref="PackageManagerNotSupportedException"></exception>
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("windows")]
+#endif
+        public override IEnumerable<AppModel> GetUpdatable()
         {
-            try
+            if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                string[] chocoTest = CommandRunner.RunCmdCommand("choco info").Split(' ');
-                    
-                if (chocoTest[0].Contains("Chocolatey"))
+                if (!IsPackageManagerInstalled())
                 {
-                    Version.Parse(chocoTest[1]);
-
-                    return true;
+                    throw new PackageManagerNotInstalledException(PackageManagerName);
                 }
+            
+                List<AppModel> apps = new List<AppModel>();
+            
+                string[] chocoResults = CommandRunner.RunCmdCommand("choco outdated -l -r --id-only").Split(Environment.NewLine);
+
+                string chocolateyLocation = CommandRunner.RunPowerShellCommand("$env:ChocolateyInstall");
+            
+                foreach (string package in chocoResults)
+                {
+                    apps.Add(new AppModel(package, chocolateyLocation));
+                }
+
+                return apps.ToArray();
             }
-            catch
+
+            throw new PackageManagerNotSupportedException(PackageManagerName);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="PlatformNotSupportedException"></exception>
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("windows")]
+#endif
+        public override IEnumerable<AppModel> GetInstalled()
+        {
+            if (DoesPackageManagerSupportThisOperatingSystem())
             {
+                if (!IsPackageManagerInstalled())
+                {
+                    throw new PackageManagerNotInstalledException(PackageManagerName);
+                }
+            
+                List<AppModel> apps = new List<AppModel>();
+            
+                string[] chocoResults = CommandRunner.RunCmdCommand("choco list -l -r --id-only").Split(Environment.NewLine);
+
+                string chocolateyLocation = CommandRunner.RunPowerShellCommand("$env:ChocolateyInstall");
+            
+                foreach (string package in chocoResults)
+                {
+                    apps.Add(new AppModel(package, chocolateyLocation));
+                }
+
+                return apps.ToArray();
+            }
+
+            throw new PackageManagerNotSupportedException(PackageManagerName);
+        }
+    
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="PlatformNotSupportedException"></exception>
+        public override bool IsPackageManagerInstalled()
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                try
+                {
+                    string[] chocoTest = CommandRunner.RunCmdCommand("choco info").Split(' ');
+                    
+                    if (chocoTest[0].Contains("Chocolatey"))
+                    {
+                        Version.Parse(chocoTest[1]);
+
+                        return true;
+                    }
+                }
+                catch
+                {
+                    return false;
+                }
+
                 return false;
             }
 
-            return false;
+            throw new PlatformNotSupportedException();
         }
 
-        throw new PlatformNotSupportedException();
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    public override bool DoesPackageManagerSupportThisOperatingSystem()
-    {
-        return OperatingSystem.IsWindows();
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override bool DoesPackageManagerSupportThisOperatingSystem()
+        {
+            return OperatingSystem.IsWindows();
+        }
     }
 }

@@ -30,197 +30,208 @@ using PlatformKit.Software.Abstractions;
 using PlatformKit.Software.Internal.Exceptions;
 using PlatformKit.Windows;
 
-namespace PlatformKit.Software.PackageManagers;
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+using OperatingSystem = PlatformKit.Extensions.OperatingSystem.OperatingSystemExtension;
+#endif
 
-public class WingetPackageManager : AbstractPackageManager
+namespace PlatformKit.Software.PackageManagers
 {
-    public WingetPackageManager()
+    public class WingetPackageManager : AbstractPackageManager
     {
-        PackageManagerName = "Winget";
-    }
-    
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="PackageManagerNotInstalledException"></exception>
-    /// <exception cref="PackageManagerNotSupportedException"></exception>
-    [SupportedOSPlatform("windows")]
-    public override IEnumerable<AppModel> GetUpdatable()
-    {
-        if (DoesPackageManagerSupportThisOperatingSystem())
+        public WingetPackageManager()
         {
-            if (IsPackageManagerInstalled() == false)
-            {
-                throw new PackageManagerNotInstalledException(PackageManagerName);
-            }
-            
-            List<AppModel> apps = new List<AppModel>();
-
-            string[] results = CommandRunner.RunCmdCommand("winget upgrade --source=winget")
-                .Replace("-", string.Empty).Split(Environment.NewLine);
-            
-            string wingetLocation = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-            
-            int idPosition = results[0].IndexOf("Id", StringComparison.Ordinal);
-
-            for (int index = 1; index < results.Length; index++)
-            {
-                string line = results[index];
-
-                if (line.ToLower().Contains("upgrades available"))
-                {
-                    break;
-                }
-                
-                StringBuilder stringBuilder = new StringBuilder();
-
-                for (int charIndex = 0; charIndex < line.Length; charIndex++)
-                {
-                    if (charIndex < (idPosition - 1))
-                    {
-                        stringBuilder.Append(line[charIndex]);
-                    }
-                    else
-                    {
-                        string appName = stringBuilder.ToString();
-                        
-                        if (appName.Contains("  "))
-                        {
-                            appName = appName.Replace("  ", string.Empty);
-                        }
-                        apps.Add(new AppModel(appName, wingetLocation));
-                        break; 
-                    }
-                }
-            }
-
-            return apps.ToArray();
+            PackageManagerName = "Winget";
         }
-
-        throw new PackageManagerNotSupportedException(PackageManagerName);
-    }
     
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="PackageManagerNotInstalledException"></exception>
-    /// <exception cref="PackageManagerNotSupportedException"></exception>
-    [SupportedOSPlatform("windows")]
-    public override IEnumerable<AppModel> GetInstalled()
-    {
-        if (DoesPackageManagerSupportThisOperatingSystem())
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="PackageManagerNotInstalledException"></exception>
+        /// <exception cref="PackageManagerNotSupportedException"></exception>
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("windows")]
+#endif
+        public override IEnumerable<AppModel> GetUpdatable()
         {
-            if (!IsPackageManagerInstalled())
+            if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                throw new PackageManagerNotInstalledException(PackageManagerName);
-            }
-            
-            List<AppModel> apps = new List<AppModel>();
-
-            string[] results = CommandRunner.RunCmdCommand("winget list --source=winget")
-                .Replace("-", string.Empty).Split(Environment.NewLine);
-            
-            string wingetLocation = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-
-            int idPosition = results[0].IndexOf("Id", StringComparison.Ordinal);
-            
-            for (int index = 1; index < results.Length; index++)
-            {
-                string line = results[index];
-                
-                StringBuilder stringBuilder = new StringBuilder();
-
-                for (int charIndex = 0; charIndex < line.Length; charIndex++)
+                if (IsPackageManagerInstalled() == false)
                 {
-                    if (charIndex < (idPosition - 1))
+                    throw new PackageManagerNotInstalledException(PackageManagerName);
+                }
+            
+                List<AppModel> apps = new List<AppModel>();
+
+                string[] results = CommandRunner.RunCmdCommand("winget upgrade --source=winget")
+                    .Replace("-", string.Empty).Split(Environment.NewLine);
+            
+                string wingetLocation = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+            
+                int idPosition = results[0].IndexOf("Id", StringComparison.Ordinal);
+
+                for (int index = 1; index < results.Length; index++)
+                {
+                    string line = results[index];
+
+                    if (line.ToLower().Contains("upgrades available"))
                     {
-                        stringBuilder.Append(line[charIndex]);
-                    }
-                    else
-                    {
-                        string appName = stringBuilder.ToString();
-                        
-                        if (appName.Contains("  "))
-                        {
-                           appName = appName.Replace("  ", string.Empty);
-                        }
-                        apps.Add(new AppModel(appName, wingetLocation));
                         break;
                     }
+                
+                    StringBuilder stringBuilder = new StringBuilder();
+
+                    for (int charIndex = 0; charIndex < line.Length; charIndex++)
+                    {
+                        if (charIndex < (idPosition - 1))
+                        {
+                            stringBuilder.Append(line[charIndex]);
+                        }
+                        else
+                        {
+                            string appName = stringBuilder.ToString();
+                        
+                            if (appName.Contains("  "))
+                            {
+                                appName = appName.Replace("  ", string.Empty);
+                            }
+                            apps.Add(new AppModel(appName, wingetLocation));
+                            break; 
+                        }
+                    }
+                }
+
+                return apps.ToArray();
+            }
+
+            throw new PackageManagerNotSupportedException(PackageManagerName);
+        }
+    
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="PackageManagerNotInstalledException"></exception>
+        /// <exception cref="PackageManagerNotSupportedException"></exception>
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("windows")]
+#endif
+        public override IEnumerable<AppModel> GetInstalled()
+        {
+            if (DoesPackageManagerSupportThisOperatingSystem())
+            {
+                if (!IsPackageManagerInstalled())
+                {
+                    throw new PackageManagerNotInstalledException(PackageManagerName);
+                }
+            
+                List<AppModel> apps = new List<AppModel>();
+
+                string[] results = CommandRunner.RunCmdCommand("winget list --source=winget")
+                    .Replace("-", string.Empty).Split(Environment.NewLine);
+            
+                string wingetLocation = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+
+                int idPosition = results[0].IndexOf("Id", StringComparison.Ordinal);
+            
+                for (int index = 1; index < results.Length; index++)
+                {
+                    string line = results[index];
+                
+                    StringBuilder stringBuilder = new StringBuilder();
+
+                    for (int charIndex = 0; charIndex < line.Length; charIndex++)
+                    {
+                        if (charIndex < (idPosition - 1))
+                        {
+                            stringBuilder.Append(line[charIndex]);
+                        }
+                        else
+                        {
+                            string appName = stringBuilder.ToString();
+                        
+                            if (appName.Contains("  "))
+                            {
+                                appName = appName.Replace("  ", string.Empty);
+                            }
+                            apps.Add(new AppModel(appName, wingetLocation));
+                            break;
+                        }
+                    }
+                }
+
+                return apps.ToArray();
+            }
+
+            throw new PackageManagerNotSupportedException(PackageManagerName);
+        }
+    
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("windows")]
+#endif
+        public override bool IsPackageManagerInstalled()
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                if (!DoesPackageManagerSupportThisOperatingSystem())
+                {
+                    return false;
+                }
+            
+                try
+                {
+                    string[] wingetTest = CommandRunner.RunCmdCommand("winget").Split(' ');
+                    
+                    if (wingetTest[0].Contains("Windows") && wingetTest[1].Contains("Package") && wingetTest[2].Contains("Manager"))
+                    {
+                        return true;
+                    }
+                }
+                catch
+                {
+                    return false;
                 }
             }
 
-            return apps.ToArray();
+            return false;
         }
-
-        throw new PackageManagerNotSupportedException(PackageManagerName);
-    }
     
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    [SupportedOSPlatform("windows")]
-    public override bool IsPackageManagerInstalled()
-    {
-        if (OperatingSystem.IsWindows())
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override bool DoesPackageManagerSupportThisOperatingSystem()
         {
-            if (!DoesPackageManagerSupportThisOperatingSystem())
+            if (OperatingSystem.IsWindows())
             {
-                return false;
-            }
+                WindowsEdition edition = WindowsAnalyzer.GetWindowsEdition();
             
-            try
-            {
-                string[] wingetTest = CommandRunner.RunCmdCommand("winget").Split(' ');
-                    
-                if (wingetTest[0].Contains("Windows") && wingetTest[1].Contains("Package") && wingetTest[2].Contains("Manager"))
+                if (WindowsAnalyzer.IsAtLeastVersion(WindowsVersion.Win10_v1809) &&
+                    edition != WindowsEdition.Server && edition != WindowsEdition.Team)
                 {
                     return true;
                 }
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        return false;
-    }
-    
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    public override bool DoesPackageManagerSupportThisOperatingSystem()
-    {
-        if (OperatingSystem.IsWindows())
-        {
-            WindowsEdition edition = WindowsAnalyzer.GetWindowsEdition();
-            
-            if (WindowsAnalyzer.IsAtLeastVersion(WindowsVersion.Win10_v1809) &&
-                edition != WindowsEdition.Server && edition != WindowsEdition.Team)
-            {
-                return true;
-            }
-            else
-            {
-                if (WindowsAnalyzer.GetWindowsVersion().IsOlderThan(WindowsAnalyzer.GetWindowsVersionFromEnum(WindowsVersion.Win10_v1809)))
+                else
                 {
+                    if (WindowsAnalyzer.GetWindowsVersion().IsOlderThan(WindowsAnalyzer.GetWindowsVersionFromEnum(WindowsVersion.Win10_v1809)))
+                    {
+                        return false;
+                    }
+                    if (WindowsAnalyzer.GetWindowsVersionToEnum() == WindowsVersion.Win10_v1809 &&
+                        WindowsAnalyzer.GetWindowsEdition() == WindowsEdition.Server)
+                    {
+                        return false;
+                    }
+
                     return false;
                 }
-                if (WindowsAnalyzer.GetWindowsVersionToEnum() == WindowsVersion.Win10_v1809 &&
-                    WindowsAnalyzer.GetWindowsEdition() == WindowsEdition.Server)
-                {
-                    return false;
-                }
-
-                return false;
             }
-        }
 
-        return false;
+            return false;
+        }
     }
 }

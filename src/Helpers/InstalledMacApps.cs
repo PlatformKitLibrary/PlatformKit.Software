@@ -27,55 +27,62 @@ using System.Runtime.Versioning;
 using PlatformKit;
 using PlatformKit.Software.PackageManagers;
 
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+using OperatingSystem = PlatformKit.Extensions.OperatingSystem.OperatingSystemExtension;
+#endif
 
-namespace PlatformKit.Software;
 
-public class InstalledMacApps
+namespace PlatformKit.Software
 {
-  
-    [SupportedOSPlatform("macos")]
-    public static IEnumerable<AppModel> GetInstalled()
+    public class InstalledMacApps
     {
-        if (OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst())
+  
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("macos")]
+#endif
+        public static IEnumerable<AppModel> GetInstalled()
         {
-            List<AppModel> apps = new List<AppModel>();
-
-            string binDirectory = $"{Path.DirectorySeparatorChar}usr{Path.DirectorySeparatorChar}bin";
-
-            string listFilesStart = "ls -F";
-            string listFilesEnd = " | grep -v /";
-
-            string[] binResult = CommandRunner.RunCommandOnLinux($"{listFilesStart} {binDirectory} {listFilesEnd}").Split(Environment.NewLine);
-
-            foreach (string app in binResult)
+            if (OperatingSystem.IsMacOS())
             {
-                apps.Add(new AppModel(app, binDirectory));
-            }
+                List<AppModel> apps = new List<AppModel>();
 
-            string applicationsFolder = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
+                string binDirectory = $"{Path.DirectorySeparatorChar}usr{Path.DirectorySeparatorChar}bin";
 
-            string[] appResults = CommandRunner
-                .RunCommandOnMac($"{listFilesStart} {applicationsFolder} {listFilesEnd}")
-                .Split(Environment.NewLine);
+                string listFilesStart = "ls -F";
+                string listFilesEnd = " | grep -v /";
 
-            foreach (string app in appResults)
-            {
-                apps.Add(new AppModel(app, applicationsFolder));
-            }
+                string[] binResult = CommandRunner.RunCommandOnLinux($"{listFilesStart} {binDirectory} {listFilesEnd}").Split(Environment.NewLine);
 
-            HomeBrewPackageManager homeBrew = new HomeBrewPackageManager();
-            
-            if (homeBrew.IsPackageManagerInstalled())
-            {
-                foreach (AppModel app in homeBrew.GetInstalled())
+                foreach (string app in binResult)
                 {
-                    apps.Add(app);
+                    apps.Add(new AppModel(app, binDirectory));
                 }
+
+                string applicationsFolder = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
+
+                string[] appResults = CommandRunner
+                    .RunCommandOnMac($"{listFilesStart} {applicationsFolder} {listFilesEnd}")
+                    .Split(Environment.NewLine);
+
+                foreach (string app in appResults)
+                {
+                    apps.Add(new AppModel(app, applicationsFolder));
+                }
+
+                HomeBrewPackageManager homeBrew = new HomeBrewPackageManager();
+            
+                if (homeBrew.IsPackageManagerInstalled())
+                {
+                    foreach (AppModel app in homeBrew.GetInstalled())
+                    {
+                        apps.Add(app);
+                    }
+                }
+
+                return apps.ToArray();
             }
 
-            return apps.ToArray();
+            throw new PlatformNotSupportedException();
         }
-
-        throw new PlatformNotSupportedException();
     }
 }

@@ -22,26 +22,27 @@
     SOFTWARE.
  */
 
-namespace PlatformKit.Software.Extensions.AppModelExtensions;
-
-public static class ExtractAppNameExtensions
+namespace PlatformKit.Software.Extensions.AppModelExtensions
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="apps">The packages to have the package names extracted from.</param>
-    /// <returns></returns>
-    public static IEnumerable<string> ExtractAppNames(this IEnumerable<AppModel> apps)
+    public static class ExtractAppNameExtensions
     {
-        AppModel[] enumerable = apps as AppModel[] ?? apps.ToArray();
-        
-        List<string> packages = new List<string>();
-
-        foreach (AppModel app in enumerable)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="apps">The packages to have the package names extracted from.</param>
+        /// <returns></returns>
+        public static IEnumerable<string> ExtractAppNames(this IEnumerable<AppModel> apps)
         {
-            packages.Add(app.ExecutableName);
-        }
+            AppModel[] enumerable = apps as AppModel[] ?? apps.ToArray();
+        
+            List<string> packages = new List<string>();
 
-        return packages;
+            foreach (AppModel app in enumerable)
+            {
+                packages.Add(app.ExecutableName);
+            }
+
+            return packages;
+        }
     }
 }

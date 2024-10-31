@@ -27,109 +27,120 @@ using System.Runtime.Versioning;
 using PlatformKit.Software.Abstractions;
 using PlatformKit.Software.Internal.Exceptions;
 
-namespace PlatformKit.Software.PackageManagers;
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+using OperatingSystem = PlatformKit.Extensions.OperatingSystem.OperatingSystemExtension;
+#endif
 
-public class SnapPackageManager : AbstractPackageManager
+namespace PlatformKit.Software.PackageManagers
 {
-    public SnapPackageManager()
+    public class SnapPackageManager : AbstractPackageManager
     {
-        PackageManagerName = "Snap";
-    }
-    
-    /// <summary>
-    /// Gets the names of updatable Snap packages.
-    /// </summary>
-    /// <returns>the updatable Snap packages as AppModel objects.</returns>
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    public override IEnumerable<AppModel> GetUpdatable()
-    {
-        if (DoesPackageManagerSupportThisOperatingSystem())
+        public SnapPackageManager()
         {
-            if (!IsPackageManagerInstalled())
+            PackageManagerName = "Snap";
+        }
+    
+        /// <summary>
+        /// Gets the names of updatable Snap packages.
+        /// </summary>
+        /// <returns>the updatable Snap packages as AppModel objects.</returns>
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("freebsd")]
+#endif
+        public override IEnumerable<AppModel> GetUpdatable()
+        {
+            if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                throw new PackageManagerNotInstalledException(PackageManagerName);
-            }
-            
-            List<AppModel> apps = new List<AppModel>();
-
-            string[] snapUpdates = CommandRunner.RunCommandOnLinux("snap refresh --list").Split(Environment.NewLine);
-
-            if (snapUpdates.Length > 1)
-            {
-                for (int i = 1; i < snapUpdates.Length; i++)
+                if (!IsPackageManagerInstalled())
                 {
-                    string[] snapInfos = snapUpdates[i].Split(" ");
-                    string snap = snapInfos[0];
-                
-                    apps.Add(new AppModel(snap,
-                        $"{Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin"));
+                    throw new PackageManagerNotInstalledException(PackageManagerName);
                 }
-            }
-            else
-            {
-                apps.Clear();
+            
+                List<AppModel> apps = new List<AppModel>();
+
+                string[] snapUpdates = CommandRunner.RunCommandOnLinux("snap refresh --list").Split(Environment.NewLine);
+
+                if (snapUpdates.Length > 1)
+                {
+                    for (int i = 1; i < snapUpdates.Length; i++)
+                    {
+                        string[] snapInfos = snapUpdates[i].Split(" ");
+                        string snap = snapInfos[0];
+                
+                        apps.Add(new AppModel(snap,
+                            $"{Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin"));
+                    }
+                }
+                else
+                {
+                    apps.Clear();
+                    return apps.ToArray();
+                }
+
                 return apps.ToArray();
             }
 
-            return apps.ToArray();
+            throw new PackageManagerNotSupportedException(PackageManagerName);
         }
-
-        throw new PackageManagerNotSupportedException(PackageManagerName);
-    }
     
-    /// <summary>
-    /// Detect what Snap packages (if any) are installed on a linux distribution or on macOS.
-    /// </summary>
-    /// <returns>Returns a list of installed snaps. Returns an empty array if no Snaps are installed.</returns>
-    /// <exception cref="PlatformNotSupportedException">Throws an exception if run on a Platform other than Linux, macOS, and FreeBsd.</exception>
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    public override IEnumerable<AppModel> GetInstalled()
-    {
-        if (DoesPackageManagerSupportThisOperatingSystem())
+        /// <summary>
+        /// Detect what Snap packages (if any) are installed on a linux distribution or on macOS.
+        /// </summary>
+        /// <returns>Returns a list of installed snaps. Returns an empty array if no Snaps are installed.</returns>
+        /// <exception cref="PlatformNotSupportedException">Throws an exception if run on a Platform other than Linux, macOS, and FreeBsd.</exception>
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("freebsd")]
+#endif
+        public override IEnumerable<AppModel> GetInstalled()
         {
-            if (!IsPackageManagerInstalled())
+            if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                throw new PackageManagerNotInstalledException(PackageManagerName);
-            }
+                if (!IsPackageManagerInstalled())
+                {
+                    throw new PackageManagerNotInstalledException(PackageManagerName);
+                }
             
-            List<AppModel> apps = new List<AppModel>();
+                List<AppModel> apps = new List<AppModel>();
 
-            string[] snapResults = CommandRunner.RunCommandOnLinux(
+                string[] snapResults = CommandRunner.RunCommandOnLinux(
                     $"ls {Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin").Split(' ');
 
-            foreach (string snap in snapResults)
-            {
-                apps.Add(new AppModel(snap, 
-                    $"{Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin"));
+                foreach (string snap in snapResults)
+                {
+                    apps.Add(new AppModel(snap, 
+                        $"{Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin"));
+                }
+
+                return apps.ToArray();
             }
 
-            return apps.ToArray();
+            throw new PackageManagerNotSupportedException(PackageManagerName);
         }
 
-        throw new PackageManagerNotSupportedException(PackageManagerName);
-    }
-
-    public override bool DoesPackageManagerSupportThisOperatingSystem()
-    {
-        return OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD();
-    }
-
-    /// <summary>
-    /// Detect if the Snap package manager is installed.
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="PlatformNotSupportedException"></exception>
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    public override bool IsPackageManagerInstalled()
-    {
-        if (DoesPackageManagerSupportThisOperatingSystem())
+        public override bool DoesPackageManagerSupportThisOperatingSystem()
         {
-            return Directory.Exists($"{Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin");
+            return OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD();
         }
 
-        throw new PackageManagerNotInstalledException(PackageManagerName);
+        /// <summary>
+        /// Detect if the Snap package manager is installed.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="PlatformNotSupportedException"></exception>
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("freebsd")]
+#endif
+        public override bool IsPackageManagerInstalled()
+        {
+            if (DoesPackageManagerSupportThisOperatingSystem())
+            {
+                return Directory.Exists($"{Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin");
+            }
+
+            throw new PackageManagerNotInstalledException(PackageManagerName);
+        }
     }
 }

@@ -23,20 +23,21 @@
  */
 
 
-namespace PlatformKit.Software;
-
-public class AppModel
+namespace PlatformKit.Software
 {
-    public AppModel(string executableName, string installLocation)
+    public class AppModel
     {
-        ExecutableName = executableName;
-        InstallLocation = installLocation;
+        public AppModel(string executableName, string installLocation)
+        {
+            ExecutableName = executableName;
+            InstallLocation = installLocation;
+        }
+
+        public string? Author { get; set; }
+
+        public string? FriendlyName { get; set; }
+        public string ExecutableName { get; set; }
+        public string InstallLocation { get; set; }
+        public Version? InstalledVersion { get; set; }
     }
-
-    public string? Author { get; set; }
-
-    public string? FriendlyName { get; set; }
-    public string ExecutableName { get; set; }
-    public string InstallLocation { get; set; }
-    public Version? InstalledVersion { get; set; }
 }

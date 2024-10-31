@@ -28,80 +28,93 @@ using PlatformKit;
 using PlatformKit.Software.Abstractions;
 using PlatformKit.Software.Internal.Exceptions;
 
-namespace PlatformKit.Software.PackageManagers;
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+using OperatingSystem = PlatformKit.Extensions.OperatingSystem.OperatingSystemExtension;
+#endif
 
-
-// ReSharper disable once ClassNeverInstantiated.Global
-public class FlatpakPackageManager : AbstractPackageManager
+namespace PlatformKit.Software.PackageManagers
 {
-    public FlatpakPackageManager()
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public class FlatpakPackageManager : AbstractPackageManager
     {
-        PackageManagerName = "Flatpak";
-    }
-    
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    public override IEnumerable<AppModel> GetUpdatable()
-    {
-        if (DoesPackageManagerSupportThisOperatingSystem())
+        public FlatpakPackageManager()
         {
-            if (!IsPackageManagerInstalled())
+            PackageManagerName = "Flatpak";
+        }
+    
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="PackageManagerNotInstalledException"></exception>
+        /// <exception cref="PackageManagerNotSupportedException"></exception>
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("freebsd")]
+#endif
+        public override IEnumerable<AppModel> GetUpdatable()
+        {
+            if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                throw new PackageManagerNotInstalledException(PackageManagerName);
-            }
-            
-            List<AppModel> apps = new List<AppModel>();
-            
-            string[] flatpakResults = CommandRunner.RunCommandOnLinux("flatpak update -n")
-                .Split(Environment.NewLine);
-
-            string installLocation = CommandRunner.RunCommandOnLinux("flatpak --installations");
-
-            if (flatpakResults.Length > 1)
-            {
-                for (int index = 1; index < flatpakResults.Length; index++)
+                if (!IsPackageManagerInstalled())
                 {
-                    string flatpakResult = flatpakResults[index];
+                    throw new PackageManagerNotInstalledException(PackageManagerName);
+                }
+            
+                List<AppModel> apps = new List<AppModel>();
+            
+                string[] flatpakResults = CommandRunner.RunCommandOnLinux("flatpak update -n")
+                    .Split(Environment.NewLine);
 
-                    if (!flatpakResult.Equals(string.Empty) && flatpakResult.Contains('.') && !flatpakResult.Contains("ID"))
+                string installLocation = CommandRunner.RunCommandOnLinux("flatpak --installations");
+
+                if (flatpakResults.Length > 1)
+                {
+                    for (int index = 1; index < flatpakResults.Length; index++)
                     {
-                        string result = flatpakResult.Split(" ")[1];
+                        string flatpakResult = flatpakResults[index];
+
+                        if (!flatpakResult.Equals(string.Empty) && flatpakResult.Contains('.') && !flatpakResult.Contains("ID"))
+                        {
+                            string result = flatpakResult.Split(" ")[1];
                     
-                        apps.Add(new AppModel(result, installLocation));
+                            apps.Add(new AppModel(result, installLocation));
+                        }
                     }
                 }
-            }
-            else
-            {
-                apps.Clear();
+                else
+                {
+                    apps.Clear();
+                }
+
+                return apps.ToArray();
             }
 
-            return apps.ToArray();
+            throw new PackageManagerNotSupportedException(PackageManagerName);
         }
 
-        throw new PackageManagerNotSupportedException(PackageManagerName);
-    }
-
-    /// <summary>
-    /// Platforms Supported On: Linux and FreeBsd.
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="PlatformNotSupportedException"></exception>
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    public override IEnumerable<AppModel> GetInstalled()
-    {
-        if (DoesPackageManagerSupportThisOperatingSystem())
+        /// <summary>
+        /// Platforms Supported On: Linux and FreeBsd.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="PlatformNotSupportedException"></exception>
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("freebsd")]
+#endif
+        public override IEnumerable<AppModel> GetInstalled()
         {
-            if (!IsPackageManagerInstalled())
+            if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                throw new PackageManagerNotInstalledException(PackageManagerName);
-            }
+                if (!IsPackageManagerInstalled())
+                {
+                    throw new PackageManagerNotInstalledException(PackageManagerName);
+                }
             
-            List<AppModel> apps = new List<AppModel>();
+                List<AppModel> apps = new List<AppModel>();
             
                 string[] flatpakResults = CommandRunner.RunCommandOnLinux("flatpak list --columns=name")
-                .Split(Environment.NewLine);
+                    .Split(Environment.NewLine);
 
                 string installLocation = CommandRunner.RunCommandOnLinux("flatpak --installations");
 
@@ -111,49 +124,52 @@ public class FlatpakPackageManager : AbstractPackageManager
                 }
 
                 return apps.ToArray();
+            }
+
+            throw new PackageManagerNotSupportedException(PackageManagerName);
         }
 
-        throw new PackageManagerNotSupportedException(PackageManagerName);
-    }
-
-    /// <summary>
-    /// Determines whether the Flatpak package manager is installed or not.
-    /// </summary>
-    /// <returns></returns>
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    public override bool IsPackageManagerInstalled()
-    {
-        if (DoesPackageManagerSupportThisOperatingSystem())
+        /// <summary>
+        /// Determines whether the Flatpak package manager is installed or not.
+        /// </summary>
+        /// <returns></returns>
+#if NET5_0_OR_GREATER
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("freebsd")]
+#endif
+        public override bool IsPackageManagerInstalled()
         {
-            try
+            if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                string[] flatpakTest = CommandRunner.RunCommandOnLinux("flatpak --version").Split(' ');
-                
-                if (flatpakTest[0].Contains("Flatpak"))
+                try
                 {
-                    Version.Parse(flatpakTest[1]);
+                    string[] flatpakTest = CommandRunner.RunCommandOnLinux("flatpak --version").Split(' ');
+                
+                    if (flatpakTest[0].Contains("Flatpak"))
+                    {
+                        Version.Parse(flatpakTest[1]);
 
-                    return true;
+                        return true;
+                    }
                 }
-            }
-            catch
-            {
+                catch
+                {
+                    return false;
+                }
+
                 return false;
             }
 
-            return false;
+            throw new PackageManagerNotSupportedException(PackageManagerName);
         }
-
-        throw new PackageManagerNotSupportedException(PackageManagerName);
-    }
     
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    public override bool DoesPackageManagerSupportThisOperatingSystem()
-    {
-        return OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD();
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override bool DoesPackageManagerSupportThisOperatingSystem()
+        {
+            return OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD();
+        }
     }
 }

@@ -24,16 +24,17 @@
 
 using PlatformKit.Software.Internal.Localizations;
 
-namespace PlatformKit.Software.Internal.Exceptions;
-
-public class PackageManagerNotSupportedException : Exception
+namespace PlatformKit.Software.Internal.Exceptions
 {
-    /// <summary>
-    /// An exception that is thrown when a required Package Manager is not supported.
-    /// </summary>
-    /// <param name="packageManagerName">The name of the package manager.</param>
-    public PackageManagerNotSupportedException(string packageManagerName) : base(Resources.Exceptions_PackageManagerNotSupported.Replace("{x}", packageManagerName))
+    public class PackageManagerNotSupportedException : Exception
     {
+        /// <summary>
+        /// An exception that is thrown when a required Package Manager is not supported.
+        /// </summary>
+        /// <param name="packageManagerName">The name of the package manager.</param>
+        public PackageManagerNotSupportedException(string packageManagerName) : base(Resources.Exceptions_PackageManagerNotSupported.Replace("{x}", packageManagerName))
+        {
         
+        }
     }
 }

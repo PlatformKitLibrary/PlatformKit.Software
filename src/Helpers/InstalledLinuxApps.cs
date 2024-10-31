@@ -27,40 +27,49 @@ using System.Runtime.Versioning;
 using PlatformKit;
 using PlatformKit.Software.PackageManagers;
 
-namespace PlatformKit.Software;
 
-public class InstalledLinuxApps
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+using OperatingSystem = PlatformKit.Extensions.OperatingSystem.OperatingSystemExtension;
+#endif
+
+
+namespace PlatformKit.Software
 {
-
-    // ReSharper disable once IdentifierTypo
-    [SupportedOSPlatform("linux")]
-    public static IEnumerable<AppModel> GetInstalled(bool includeBrewCasks = true)
+    public class InstalledLinuxApps
     {
-        if (OperatingSystem.IsLinux())
+
+        // ReSharper disable once IdentifierTypo
+        #if NET5_0_OR_GREATER
+        [SupportedOSPlatform("linux")]
+        #endif
+        public static IEnumerable<AppModel> GetInstalled(bool includeBrewCasks = true)
         {
-            List<AppModel> apps = new List<AppModel>();
-
-            string[] binResult = CommandRunner.RunCommandOnLinux("ls -F /usr/bin | grep -v /").Split(Environment.NewLine);
-
-            foreach (string app in binResult)
+            if (OperatingSystem.IsLinux())
             {
-                apps.Add(new AppModel(app, $"{Path.DirectorySeparatorChar}usr{Path.DirectorySeparatorChar}bin"));
-            }
+                List<AppModel> apps = new List<AppModel>();
 
-            if (includeBrewCasks)
-            {
-                HomeBrewPackageManager homeBrew = new HomeBrewPackageManager();
-                
-                foreach (AppModel app in homeBrew.GetInstalled())
+                string[] binResult = CommandRunner.RunCommandOnLinux("ls -F /usr/bin | grep -v /").Split(Environment.NewLine);
+
+                foreach (string app in binResult)
                 {
-                    apps.Add(app);
+                    apps.Add(new AppModel(app, $"{Path.DirectorySeparatorChar}usr{Path.DirectorySeparatorChar}bin"));
                 }
+
+                if (includeBrewCasks)
+                {
+                    HomeBrewPackageManager homeBrew = new HomeBrewPackageManager();
+                
+                    foreach (AppModel app in homeBrew.GetInstalled())
+                    {
+                        apps.Add(app);
+                    }
+                }
+
+                return apps.ToArray();
             }
 
-            return apps.ToArray();
+            throw new PlatformNotSupportedException();
         }
 
-        throw new PlatformNotSupportedException();
     }
-
 }
