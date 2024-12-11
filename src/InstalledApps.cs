@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using PlatformKit;
 
 #if NETSTANDARD2_0 || NETSTANDARD2_1
-using OperatingSystem = PlatformKit.Extensions.OperatingSystem.OperatingSystemExtension;
+using OperatingSystem = AlastairLundy.Extensions.Runtime.OperatingSystemExtensions;
 #endif
 
 namespace PlatformKit.Software

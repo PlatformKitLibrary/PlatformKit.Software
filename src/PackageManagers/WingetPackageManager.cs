@@ -27,13 +27,13 @@ using System.Collections.Generic;
 using System.Runtime.Versioning;
 using System.Text;
 using AlastairLundy.Extensions.System;
-using PlatformKit;
+
 using PlatformKit.Software.Abstractions;
 using PlatformKit.Software.Internal.Exceptions;
 using PlatformKit.Windows;
 
 #if NETSTANDARD2_0 || NETSTANDARD2_1
-using OperatingSystem = PlatformKit.Extensions.OperatingSystem.OperatingSystemExtension;
+using OperatingSystem = AlastairLundy.Extensions.Runtime.OperatingSystemExtensions;
 #endif
 
 namespace PlatformKit.Software.PackageManagers
