@@ -63,7 +63,7 @@ namespace PlatformKit.Software
                     .RunCmdCommand($"dir {Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}");
 
                 string winPrograms = CommandRunner
-                    .RunCmdCommand(Environment.GetFolderPath(Environment.SpecialFolder.System));
+                    .RunCmdCommand($"dir {Environment.GetFolderPath(Environment.SpecialFolder.System)}");
 
                 foreach (AppModel program in ExpandWinSpecialFolderPath(programFiles))
                 {
