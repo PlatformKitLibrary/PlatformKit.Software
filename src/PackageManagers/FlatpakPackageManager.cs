@@ -60,7 +60,7 @@ namespace PlatformKit.Software.PackageManagers
         {
             if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                if (!IsPackageManagerInstalled())
+                if (IsPackageManagerInstalled() == false)
                 {
                     throw new PackageManagerNotInstalledException(PackageManagerName);
                 }
@@ -78,7 +78,7 @@ namespace PlatformKit.Software.PackageManagers
                     {
                         string flatpakResult = flatpakResults[index];
 
-                        if (!flatpakResult.Equals(string.Empty) && flatpakResult.Contains('.') && !flatpakResult.Contains("ID"))
+                        if (flatpakResult.Equals(string.Empty) == false && flatpakResult.Contains('.') && flatpakResult.Contains("ID") == false)
                         {
                             string result = flatpakResult.Split(" ")[1];
                     
@@ -110,7 +110,7 @@ namespace PlatformKit.Software.PackageManagers
         {
             if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                if (!IsPackageManagerInstalled())
+                if (IsPackageManagerInstalled() == false)
                 {
                     throw new PackageManagerNotInstalledException(PackageManagerName);
                 }

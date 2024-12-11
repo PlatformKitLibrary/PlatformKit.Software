@@ -63,7 +63,7 @@ namespace PlatformKit.Software.PackageManagers
         {
             if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                if (!IsPackageManagerInstalled())
+                if (IsPackageManagerInstalled() == false)
                 {
                     throw new PackageManagerNotInstalledException("HomeBrew");
                 }

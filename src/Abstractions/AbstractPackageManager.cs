@@ -73,7 +73,7 @@ namespace PlatformKit.Software.Abstractions
         {
             if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                if (!IsPackageManagerInstalled())
+                if (IsPackageManagerInstalled() == false)
                 {
                     throw new PackageManagerNotInstalledException(PackageManagerName);
                 }
