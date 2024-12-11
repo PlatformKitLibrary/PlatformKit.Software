@@ -53,13 +53,17 @@ namespace PlatformKit.Software
             {
                 List<AppModel> apps = new List<AppModel>();
 
-                string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                string programFiles = CommandRunner.RunCmdCommand(
+                    $"dir {Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)}");
 
-                string programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+                string programFilesX86 = CommandRunner.RunCmdCommand(
+                    $"dir {Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)}");
 
-                string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                string appData = CommandRunner
+                    .RunCmdCommand($"dir {Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}");
 
-                string winPrograms = Environment.GetFolderPath(Environment.SpecialFolder.System);
+                string winPrograms = CommandRunner
+                    .RunCmdCommand(Environment.GetFolderPath(Environment.SpecialFolder.System));
 
                 foreach (AppModel program in ExpandWinSpecialFolderPath(programFiles))
                 {
