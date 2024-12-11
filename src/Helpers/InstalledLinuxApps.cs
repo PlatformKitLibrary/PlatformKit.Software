@@ -25,9 +25,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Versioning;
 
-using PlatformKit;
+#if NET5_0_OR_GREATER
+using System.Runtime.Versioning;
+#endif
+
 using PlatformKit.Software.PackageManagers;
 
 

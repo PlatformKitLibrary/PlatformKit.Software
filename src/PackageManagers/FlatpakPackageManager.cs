@@ -24,8 +24,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.Versioning;
 
+#if NET5_0_OR_GREATER
+using System.Runtime.Versioning;
+#endif
 using PlatformKit;
 using PlatformKit.Software.Abstractions;
 using PlatformKit.Software.Internal.Exceptions;
