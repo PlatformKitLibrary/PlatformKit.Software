@@ -28,8 +28,8 @@
     </ItemGroup>
     
     <ItemGroup>
-      <PackageReference Include="PlatformKit" Version="[4.4.0, 5.0.0)" />
       <PackageReference Include="AlastairLundy.Extensions.System" Version="[5.4.0, 6.0.0)" />
+      <PackageReference Include="PlatformKit" Version="[4.5.0, 5.0.0)" />
     </ItemGroup>
 
     <ItemGroup>
