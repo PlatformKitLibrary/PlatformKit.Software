@@ -28,8 +28,10 @@
     </ItemGroup>
     
     <ItemGroup>
-      <PackageReference Include="AlastairLundy.Extensions.System" Version="[5.4.0, 6.0.0)" />
+      <PackageReference Include="AlastairLundy.Extensions.Strings" Version="[5.5.0, 6.0.0)" />
       <PackageReference Include="PlatformKit" Version="[4.5.0, 5.0.0)" />
+        <PackageReference Include="CliRunner" Version="[0.3.0, 1.0.0)" />
+        <PackageReference Include="CliRunner.Specializations" Version="[0.3.0, 1.0.0)"/>
     </ItemGroup>
 
     <ItemGroup>

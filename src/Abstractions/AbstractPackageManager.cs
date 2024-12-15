@@ -23,6 +23,7 @@
  */
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using PlatformKit.Software.Internal.Exceptions;
 
 namespace PlatformKit.Software.Abstractions
@@ -33,10 +34,10 @@ namespace PlatformKit.Software.Abstractions
     
         public abstract bool DoesPackageManagerSupportThisOperatingSystem();
 
-        public abstract bool IsPackageManagerInstalled();
+        public abstract Task<bool> IsPackageManagerInstalledAsync();
 
-        public abstract IEnumerable<AppModel> GetUpdatable();
-        public abstract IEnumerable<AppModel> GetInstalled();
+        public abstract Task<IEnumerable<AppModel>> GetUpdatableAsync();
+        public abstract Task<IEnumerable<AppModel>> GetInstalledAsync();
 
         private string CleanUpExecutableName(string executableName)
         {
@@ -69,11 +70,11 @@ namespace PlatformKit.Software.Abstractions
         /// <returns></returns>
         /// <exception cref="PackageManagerNotInstalledException"></exception>
         /// <exception cref="PackageManagerNotSupportedException"></exception>
-        public bool IsPackageInstalled(string packageName)
+        public async Task<bool> IsPackageInstalledAsync(string packageName)
         {
             if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                if (IsPackageManagerInstalled() == false)
+                if (await IsPackageManagerInstalledAsync() == false)
                 {
                     throw new PackageManagerNotInstalledException(PackageManagerName);
                 }
@@ -82,7 +83,7 @@ namespace PlatformKit.Software.Abstractions
 
                 string newPackageName = CleanUpExecutableName(packageName);
             
-                foreach (AppModel app in GetInstalled())
+                foreach (AppModel app in await GetInstalledAsync())
                 {
                     string tempAppName = CleanUpExecutableName(app.ExecutableName);
                 

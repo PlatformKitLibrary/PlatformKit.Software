@@ -28,6 +28,7 @@ using System.Runtime.Versioning;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using PlatformKit;
 
 #if NETSTANDARD2_0 || NETSTANDARD2_1
@@ -49,9 +50,9 @@ namespace PlatformKit.Software
         [SupportedOSPlatform("linux")]
         [SupportedOSPlatform("macos")]
 #endif
-        public static bool IsInstalled(string appName)
+        public static async Task<bool> IsInstalled(string appName)
         {
-            foreach (AppModel app in Get())
+            foreach (AppModel app in await Get())
             {
                 if (app.ExecutableName.Equals(appName))
                 {
@@ -72,19 +73,19 @@ namespace PlatformKit.Software
         [SupportedOSPlatform("linux")]
         [SupportedOSPlatform("macos")]
 #endif
-        public static IEnumerable<AppModel> Get()
+        public static async Task<IEnumerable<AppModel>> Get()
         {
             if (OperatingSystem.IsWindows())
             {
-                return InstalledWindowsApps.GetInstalled(true);
+                return await InstalledWindowsApps.GetInstalled(true);
             }
             else if (OperatingSystem.IsMacOS())
             {
-                return InstalledMacApps.GetInstalled();
+                return await InstalledMacApps.GetInstalled();
             }
             else if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
             {
-                return InstalledLinuxApps.GetInstalled(true);
+                return await InstalledLinuxApps.GetInstalled(true);
             }
 
             throw new PlatformNotSupportedException();

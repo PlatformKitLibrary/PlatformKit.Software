@@ -24,14 +24,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 #if NET5_0_OR_GREATER
 using System.Runtime.Versioning;
 #endif
 
 using System.Text;
-
+using System.Threading.Tasks;
 using AlastairLundy.Extensions.System;
+
+using CliRunner.Specializations.Commands;
 
 using PlatformKit.Software.Abstractions;
 using PlatformKit.Software.Internal.Exceptions;
@@ -59,19 +62,24 @@ namespace PlatformKit.Software.PackageManagers
 #if NET5_0_OR_GREATER
         [SupportedOSPlatform("windows")]
 #endif
-        public override IEnumerable<AppModel> GetUpdatable()
+        public override async Task< IEnumerable<AppModel>> GetUpdatableAsync()
         {
             if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                if (IsPackageManagerInstalled() == false)
+                if (await IsPackageManagerInstalledAsync() == false)
                 {
                     throw new PackageManagerNotInstalledException(PackageManagerName);
                 }
             
                 List<AppModel> apps = new List<AppModel>();
 
-                string[] results = CommandRunner.RunCmdCommand("winget upgrade --source=winget")
-                    .Replace("-", string.Empty).Split(Environment.NewLine);
+                var command = await CmdCommand.Create()
+                    .WithArguments("winget upgrade --source=winget")
+                    .WithWorkingDirectory(Directory.GetCurrentDirectory())
+                    .WithShellExecute(true)
+                    .ExecuteBufferedAsync();
+                
+                string[] results = command.StandardOutput.Replace("-", string.Empty).Split(Environment.NewLine);
             
                 string wingetLocation = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
             
@@ -123,19 +131,24 @@ namespace PlatformKit.Software.PackageManagers
 #if NET5_0_OR_GREATER
         [SupportedOSPlatform("windows")]
 #endif
-        public override IEnumerable<AppModel> GetInstalled()
+        public override async Task<IEnumerable<AppModel>> GetInstalledAsync()
         {
             if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                if (IsPackageManagerInstalled() == false)
+                if (await IsPackageManagerInstalledAsync() == false)
                 {
                     throw new PackageManagerNotInstalledException(PackageManagerName);
                 }
             
                 List<AppModel> apps = new List<AppModel>();
 
-                string[] results = CommandRunner.RunCmdCommand("winget list --source=winget")
-                    .Replace("-", string.Empty).Split(Environment.NewLine);
+                var command = await CmdCommand.Create()
+                    .WithArguments("winget list --source=winget")
+                    .WithWorkingDirectory(Directory.GetCurrentDirectory())
+                    .WithShellExecute(true)
+                    .ExecuteBufferedAsync();
+                
+                string[] results = command.StandardOutput.Replace("-", string.Empty).Split(Environment.NewLine);
             
                 string wingetLocation = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
 
@@ -180,7 +193,7 @@ namespace PlatformKit.Software.PackageManagers
 #if NET5_0_OR_GREATER
         [SupportedOSPlatform("windows")]
 #endif
-        public override bool IsPackageManagerInstalled()
+        public override async Task<bool> IsPackageManagerInstalledAsync()
         {
             if (OperatingSystem.IsWindows())
             {
@@ -191,7 +204,13 @@ namespace PlatformKit.Software.PackageManagers
             
                 try
                 {
-                    string[] wingetTest = CommandRunner.RunCmdCommand("winget").Split(' ');
+                    var command = await CmdCommand.Create()
+                        .WithArguments("winget")
+                        .WithWorkingDirectory(Directory.GetCurrentDirectory())
+                        .WithShellExecute(true)
+                        .ExecuteBufferedAsync();
+                    
+                    string[] wingetTest = command.StandardOutput.Split(' ');
                     
                     if (wingetTest[0].Contains("Windows") && wingetTest[1].Contains("Package") && wingetTest[2].Contains("Manager"))
                     {

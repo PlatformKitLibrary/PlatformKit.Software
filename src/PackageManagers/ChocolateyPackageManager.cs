@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 #if NET5_0_OR_GREATER
 using System.Runtime.Versioning;
@@ -55,11 +56,11 @@ namespace PlatformKit.Software.PackageManagers
 #if NET5_0_OR_GREATER
         [SupportedOSPlatform("windows")]
 #endif
-        public override IEnumerable<AppModel> GetUpdatable()
+        public override async Task<IEnumerable<AppModel>> GetUpdatableAsync()
         {
             if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                if (IsPackageManagerInstalled() == false)
+                if (await IsPackageManagerInstalledAsync() == false)
                 {
                     throw new PackageManagerNotInstalledException(PackageManagerName);
                 }
@@ -89,11 +90,11 @@ namespace PlatformKit.Software.PackageManagers
 #if NET5_0_OR_GREATER
         [SupportedOSPlatform("windows")]
 #endif
-        public override IEnumerable<AppModel> GetInstalled()
+        public override async Task<IEnumerable<AppModel>> GetInstalledAsync()
         {
             if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                if (IsPackageManagerInstalled() == false)
+                if (await IsPackageManagerInstalledAsync() == false)
                 {
                     throw new PackageManagerNotInstalledException(PackageManagerName);
                 }
@@ -121,7 +122,7 @@ namespace PlatformKit.Software.PackageManagers
         /// </summary>
         /// <returns></returns>
         /// <exception cref="PlatformNotSupportedException"></exception>
-        public override bool IsPackageManagerInstalled()
+        public override Task<bool> IsPackageManagerInstalledAsync()
         {
             if (OperatingSystem.IsWindows())
             {
@@ -133,15 +134,15 @@ namespace PlatformKit.Software.PackageManagers
                     {
                         Version.Parse(chocoTest[1]);
 
-                        return true;
+                        return Task.FromResult(true);
                     }
                 }
                 catch
                 {
-                    return false;
+                    return Task.FromResult(false);
                 }
 
-                return false;
+                return Task.FromResult(false);
             }
 
             throw new PlatformNotSupportedException();

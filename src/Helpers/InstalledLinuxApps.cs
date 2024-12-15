@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 #if NET5_0_OR_GREATER
 using System.Runtime.Versioning;
@@ -47,7 +48,7 @@ namespace PlatformKit.Software
         #if NET5_0_OR_GREATER
         [SupportedOSPlatform("linux")]
         #endif
-        public static IEnumerable<AppModel> GetInstalled(bool includeBrewCasks = true)
+        public static async Task<IEnumerable<AppModel>> GetInstalled(bool includeBrewCasks = true)
         {
             if (OperatingSystem.IsLinux())
             {
@@ -64,7 +65,7 @@ namespace PlatformKit.Software
                 {
                     HomeBrewPackageManager homeBrew = new HomeBrewPackageManager();
                 
-                    foreach (AppModel app in homeBrew.GetInstalled())
+                    foreach (AppModel app in await homeBrew.GetInstalledAsync())
                     {
                         apps.Add(app);
                     }

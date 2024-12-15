@@ -25,6 +25,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
+
+using CliRunner;
 
 #if NET5_0_OR_GREATER
 using System.Runtime.Versioning;
@@ -68,13 +71,19 @@ namespace PlatformKit.Software.PackageManagers
 #if NET5_0_OR_GREATER
         [SupportedOSPlatform("linux")]
 #endif
-        public override bool IsPackageManagerInstalled()
+        public override async Task<bool> IsPackageManagerInstalledAsync()
         {
             if (DoesPackageManagerSupportThisOperatingSystem())
             {
                 try
                 {
-                    string[] infos = CommandRunner.RunCommandOnLinux("apt -v").Split(" ");
+                    var command = await Cli.Run("/usr/bin/apt")
+                        .WithArguments("-v")
+                        .WithWorkingDirectory(Directory.GetCurrentDirectory())
+                        .WithShellExecute(true)
+                        .ExecuteBufferedAsync();
+                    
+                    string[] infos = command.StandardOutput.Split(' ');
 
                     return infos[0].Equals("apt");
                 }
@@ -96,20 +105,32 @@ namespace PlatformKit.Software.PackageManagers
 #if NET5_0_OR_GREATER
         [SupportedOSPlatform("linux")]
 #endif
-        public override IEnumerable<AppModel> GetUpdatable()
+        public override async Task<IEnumerable<AppModel>> GetUpdatableAsync()
         {
             if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                if (IsPackageManagerInstalled() == false)
+                if (await IsPackageManagerInstalledAsync() == false)
                 {
                     throw new PackageManagerNotInstalledException(PackageManagerName);
                 }
-
-                CommandRunner.RunCommandOnLinux("apt update", true);
+                
+                await Cli.Run("/usr/bin/apt")
+                    .WithArguments("update")
+                    .WithWorkingDirectory(Directory.GetCurrentDirectory())
+                    .WithShellExecute(true)
+                    .RequiresAdministrator(true)
+                    .ExecuteAsync();
+                
+                var command = await Cli.Run("/usr/bin/apt")
+                    .WithArguments("list --upgradable")
+                    .WithWorkingDirectory(Directory.GetCurrentDirectory())
+                    .WithShellExecute(true)
+                    .RequiresAdministrator(true)
+                    .ExecuteBufferedAsync();
 
                 List<AppModel> apps = new List<AppModel>();
 
-                string[] updatableApps = CommandRunner.RunCommandOnLinux("apt list --upgradable").Split(Environment.NewLine);
+                string[] updatableApps = command.StandardOutput.Split(Environment.NewLine);
 
                 if (updatableApps.Length > 1)
                 {
@@ -142,18 +163,25 @@ namespace PlatformKit.Software.PackageManagers
 #if NET5_0_OR_GREATER
         [SupportedOSPlatform("linux")]
 #endif
-        public override IEnumerable<AppModel> GetInstalled()
+        public override async Task<IEnumerable<AppModel>> GetInstalledAsync()
         {
             if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                if (IsPackageManagerInstalled() == false)
+                if (await IsPackageManagerInstalledAsync() == false)
                 {
                     throw new PackageManagerNotInstalledException(PackageManagerName);
                 }
 
                 List<AppModel> apps = new List<AppModel>();
+                
+                var command = await Cli.Run("/usr/bin/apt")
+                    .WithArguments("list")
+                    .WithWorkingDirectory(Directory.GetCurrentDirectory())
+                    .WithShellExecute(true)
+                    .RequiresAdministrator(true)
+                    .ExecuteBufferedAsync();
 
-                string[] installedApps = CommandRunner.RunCommandOnLinux("apt list").Split(Environment.NewLine);
+                string[] installedApps = command.StandardOutput.Split(Environment.NewLine);
 
                 for (int index = 1; index < installedApps.Length; index++)
                 {

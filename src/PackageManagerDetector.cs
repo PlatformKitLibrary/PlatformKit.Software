@@ -23,6 +23,7 @@
  */
 
 using System;
+using System.Threading.Tasks;
 using PlatformKit.Linux;
 using PlatformKit.Linux.Enums;
 using PlatformKit.Linux.Models;
@@ -47,7 +48,7 @@ namespace PlatformKit.Software
         /// </summary>
         /// <returns></returns>
         /// <exception cref="PlatformNotSupportedException"></exception>
-        public static PackageManager GetDefaultForPlatform()
+        public static async Task<PackageManager> GetDefaultForPlatform()
         {
             if(OperatingSystem.IsLinux())
             {
@@ -82,16 +83,16 @@ namespace PlatformKit.Software
                         HomeBrewPackageManager homeBrew = new HomeBrewPackageManager();
                         FlatpakPackageManager flatpak = new FlatpakPackageManager();
                     
-                        if(flatpak.IsPackageManagerInstalled())
+                        if(await flatpak.IsPackageManagerInstalledAsync())
                         {
                             return PackageManager.Flatpak;
                         }
 
-                        if(snap.IsPackageManagerInstalled())
+                        if(await snap.IsPackageManagerInstalledAsync())
                         {
                             return PackageManager.Snap;
                         }
-                        if(homeBrew.IsPackageManagerInstalled())
+                        if(await homeBrew.IsPackageManagerInstalledAsync())
                         {
                             return PackageManager.Homebrew;
                         }
@@ -104,7 +105,7 @@ namespace PlatformKit.Software
             {
                 HomeBrewPackageManager homeBrew = new HomeBrewPackageManager();
            
-                if(homeBrew.IsPackageManagerInstalled()) 
+                if(await homeBrew.IsPackageManagerInstalledAsync()) 
                 {
                     return PackageManager.Homebrew;
                 }
@@ -125,7 +126,7 @@ namespace PlatformKit.Software
             
                 if (chocolatey.DoesPackageManagerSupportThisOperatingSystem())
                 {
-                    if (chocolatey.IsPackageManagerInstalled())
+                    if (await chocolatey.IsPackageManagerInstalledAsync())
                     {
                         return PackageManager.Chocolatey;
                     }

@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 #if NET5_0_OR_GREATER
 using System.Runtime.Versioning;
@@ -50,7 +51,7 @@ namespace PlatformKit.Software
 #if NET5_0_OR_GREATER
         [SupportedOSPlatform("windows")]
 #endif
-        public static IEnumerable<AppModel> GetInstalled(bool includeWindowsSystemPrograms)
+        public static async Task<IEnumerable<AppModel>> GetInstalled(bool includeWindowsSystemPrograms)
         {
             if (OperatingSystem.IsWindows())
             {

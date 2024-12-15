@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 #if NET5_0_OR_GREATER
 using System.Runtime.Versioning;
@@ -54,11 +55,11 @@ namespace PlatformKit.Software.PackageManagers
         [SupportedOSPlatform("linux")]
         [SupportedOSPlatform("freebsd")]
 #endif
-        public override IEnumerable<AppModel> GetUpdatable()
+        public override async Task<IEnumerable<AppModel>> GetUpdatableAsync()
         {
             if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                if (IsPackageManagerInstalled() == false)
+                if (await IsPackageManagerInstalledAsync() == false)
                 {
                     throw new PackageManagerNotInstalledException(PackageManagerName);
                 }
@@ -99,11 +100,11 @@ namespace PlatformKit.Software.PackageManagers
         [SupportedOSPlatform("linux")]
         [SupportedOSPlatform("freebsd")]
 #endif
-        public override IEnumerable<AppModel> GetInstalled()
+        public override async Task<IEnumerable<AppModel>> GetInstalledAsync()
         {
             if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                if (IsPackageManagerInstalled() == false)
+                if (await IsPackageManagerInstalledAsync() == false)
                 {
                     throw new PackageManagerNotInstalledException(PackageManagerName);
                 }
@@ -139,11 +140,12 @@ namespace PlatformKit.Software.PackageManagers
         [SupportedOSPlatform("linux")]
         [SupportedOSPlatform("freebsd")]
 #endif
-        public override bool IsPackageManagerInstalled()
+        public override async Task<bool> IsPackageManagerInstalledAsync()
         {
             if (DoesPackageManagerSupportThisOperatingSystem())
             {
-                return Directory.Exists($"{Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin");
+                return await Task.FromResult(
+                    Directory.Exists($"{Path.DirectorySeparatorChar}snap{Path.DirectorySeparatorChar}bin"));
             }
 
             throw new PackageManagerNotInstalledException(PackageManagerName);
