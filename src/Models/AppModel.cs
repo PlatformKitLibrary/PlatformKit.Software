@@ -35,11 +35,7 @@ namespace PlatformKit.Software
             InstallLocation = installLocation;
         }
 
-        public string? Author { get; set; }
-
-        public string? FriendlyName { get; set; }
         public string ExecutableName { get; set; }
         public string InstallLocation { get; set; }
-        public Version? InstalledVersion { get; set; }
     }
 }
