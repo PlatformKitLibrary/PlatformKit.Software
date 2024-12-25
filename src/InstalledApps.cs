@@ -28,6 +28,7 @@ using System.Runtime.Versioning;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using PlatformKit;
 
@@ -52,15 +53,7 @@ namespace PlatformKit.Software
 #endif
         public static async Task<bool> IsInstalled(string appName)
         {
-            foreach (AppModel app in await Get())
-            {
-                if (app.ExecutableName.Equals(appName))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return (await Get()).Any(app => app.ExecutableName.Equals(appName));
         }
 
         /// <summary>
